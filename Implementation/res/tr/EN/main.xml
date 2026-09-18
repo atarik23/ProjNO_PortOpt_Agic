@@ -6,10 +6,16 @@
         <Res id="optimizationTab" tr="Optimization"/>
         <Res id="frontierTab" tr="Efficient Frontier"/>
         <Res id="weightsTab" tr="Portfolio Weights"/>
-        <Res id="dataInstructions" tr="Load a CSV matrix of periodic asset returns. Values must be decimals; for example, 0.012 represents 1.2 percent."/>
+        <Res id="dataInstructions" tr="Load periodic asset returns from CSV or use the bundled synthetic demonstration sample. Return values must be decimals; for example, 0.012 represents 1.2 percent."/>
         <Res id="selectedFile" tr="Selected file:"/>
         <Res id="loadCsv" tr="Load CSV..."/>
         <Res id="loadSample" tr="Load Synthetic Sample"/>
+        <Res id="showCsvFormat" tr="CSV Format..."/>
+        <Res id="loadCsvTooltip" tr="Load a comma-separated matrix of periodic asset returns."/>
+        <Res id="loadSampleTooltip" tr="Load the bundled deterministic synthetic demonstration data."/>
+        <Res id="csvFormatTooltip" tr="Show the required CSV structure and validation rules."/>
+        <Res id="csvFormatTitle" tr="CSV Input Format"/>
+        <Res id="csvFormatHelp" tr="Rows represent observation periods and columns represent assets.&#10;&#10;Example:&#10;Period,Asset A,Asset B&#10;2026-01,0.012,0.004&#10;2026-02,-0.006,0.008&#10;&#10;Requirements:&#10;- comma-separated values&#10;- a header row with unique asset names&#10;- at least two assets and two observations&#10;- decimal returns using a dot; 0.012 means 1.2 percent&#10;- no missing or non-finite values&#10;- the optional first column may be named Date, Period, Time, Timestamp, or Observation"/>
         <Res id="openCsv" tr="Open Return Data"/>
         <Res id="csvFiles" tr="CSV files"/>
         <Res id="noData" tr="No return data loaded."/>
@@ -20,6 +26,15 @@
         <Res id="buildFrontier" tr="Build Efficient Frontier"/>
         <Res id="verifyBackend" tr="Verify natID Matrix Backend"/>
         <Res id="optimizationReady" tr="Load return data, then optimize one target return or construct the complete efficient frontier."/>
+        <Res id="optimizationDataReady" tr="Return data loaded. Feasible target-return range: %.6f%% to %.6f%%. Choose a target or construct the efficient frontier."/>
+        <Res id="backendTooltip" tr="Select the natID linear-system backend used to solve the KKT systems."/>
+        <Res id="targetReturnTooltip" tr="Return per observation period in decimal form; enter 0.01 for 1 percent."/>
+        <Res id="frontierPointsTooltip" tr="Number of target-return portfolios used to construct the efficient frontier."/>
+        <Res id="optimizeTargetTooltip" tr="Compute the minimum-variance portfolio for the selected target return."/>
+        <Res id="buildFrontierTooltip" tr="Solve a sequence of target-return problems and construct the efficient frontier."/>
+        <Res id="exportFrontierTooltip" tr="Export the constructed frontier, active constraints, and portfolio weights to CSV."/>
+        <Res id="compareBackendsTooltip" tr="Solve the same target-return problem with both natID backends and compare the results."/>
+        <Res id="verifyBackendTooltip" tr="Verify both natID backends on a known 2 x 2 linear system."/>
         <Res id="optimizationError" tr="Portfolio Optimization Error"/>
         <Res id="frontierError" tr="Efficient Frontier Error"/>
         <Res id="backendSuccess" tr="Matrix backend verified successfully for a 2 x 2 linear system."/>

@@ -15,6 +15,7 @@
 #include <gui/View.h>
 #include <gui/FileDialog.h>
 
+#include <algorithm>
 #include <functional>
 #include <string>
 #include <utility>
@@ -39,7 +40,8 @@ class OptimizationView : public gui::View
     gui::Button _verifyBackend;
 
     gui::TextEdit _status;
-    gui::HorizontalLayout _buttonLayout;
+    gui::HorizontalLayout _primaryButtonLayout;
+    gui::HorizontalLayout _verificationButtonLayout;
     gui::GridLayout _layout;
 
     std::function<void()> _onResultsChanged;
@@ -64,8 +66,9 @@ public:
         , _exportFrontier(tr("exportFrontier"))
         , _compareBackends(tr("compareBackends"))
         , _verifyBackend(tr("verifyBackend"))
-        , _buttonLayout(6)
-        , _layout(5, 2)
+        , _primaryButtonLayout(4)
+        , _verificationButtonLayout(3)
+        , _layout(6, 2)
     {
         _backend.addItem(tr("denseBackend"));
         _backend.addItem(tr("sparseBackend"));
@@ -85,18 +88,38 @@ public:
 
         _optimizeTarget.setType(gui::Button::Type::Constructive);
 
-        _buttonLayout << _optimizeTarget
+        _backend.setToolTip(tr("backendTooltip"));
+        _targetReturn.setToolTip(tr("targetReturnTooltip"));
+        _frontierPoints.setToolTip(tr("frontierPointsTooltip"));
+        _optimizeTarget.setToolTip(tr("optimizeTargetTooltip"));
+        _buildFrontier.setToolTip(tr("buildFrontierTooltip"));
+        _exportFrontier.setToolTip(tr("exportFrontierTooltip"));
+        _compareBackends.setToolTip(tr("compareBackendsTooltip"));
+        _verifyBackend.setToolTip(tr("verifyBackendTooltip"));
+
+        _backend.disable();
+        _targetReturn.disable();
+        _frontierPoints.disable();
+        _optimizeTarget.disable();
+        _buildFrontier.disable();
+        _exportFrontier.disable();
+        _compareBackends.disable();
+
+        _primaryButtonLayout << _optimizeTarget
             << _buildFrontier
-            << _exportFrontier
-            << _compareBackends
+            << _exportFrontier;
+        _primaryButtonLayout.appendSpacer();
+
+        _verificationButtonLayout << _compareBackends
             << _verifyBackend;
-        _buttonLayout.appendSpacer();
+        _verificationButtonLayout.appendSpacer();
 
         gui::GridComposer composer(_layout);
         composer.appendRow(_backendLabel) << _backend;
         composer.appendRow(_targetLabel) << _targetReturn;
         composer.appendRow(_frontierPointsLabel) << _frontierPoints;
-        composer.appendRow(_buttonLayout, 0);
+        composer.appendRow(_primaryButtonLayout, 0);
+        composer.appendRow(_verificationButtonLayout, 0);
         composer.appendRow(_status, 0);
 
         setLayout(&_layout);
@@ -157,6 +180,7 @@ public:
                     _state.frontierSummary();
 
                 _status.setText(td::String(summary.c_str()));
+                _exportFrontier.disable(false);
 
                 if (_onResultsChanged)
                     _onResultsChanged();
@@ -270,5 +294,43 @@ public:
     void setOnResultsChanged(std::function<void()> callback)
     {
         _onResultsChanged = std::move(callback);
+    }
+
+    void onDataLoaded()
+    {
+        if (!_state.hasData() || _state.statistics().meanReturns.empty())
+            return;
+
+        const auto [minimumIterator, maximumIterator] = std::minmax_element(
+            _state.statistics().meanReturns.begin(),
+            _state.statistics().meanReturns.end());
+
+        const double minimumReturn = *minimumIterator;
+        const double maximumReturn = *maximumIterator;
+        constexpr double preferredTarget = 0.01;
+        const double initialTarget =
+            preferredTarget >= minimumReturn &&
+            preferredTarget <= maximumReturn
+            ? preferredTarget
+            : 0.5 * (minimumReturn + maximumReturn);
+
+        _targetReturn.setMinValue(minimumReturn);
+        _targetReturn.setMaxValue(maximumReturn);
+        _targetReturn.setValue(initialTarget);
+
+        _backend.disable(false);
+        _targetReturn.disable(false);
+        _frontierPoints.disable(false);
+        _optimizeTarget.disable(false);
+        _buildFrontier.disable(false);
+        _compareBackends.disable(false);
+        _exportFrontier.disable();
+
+        td::String message;
+        message.format(
+            tr("optimizationDataReady").c_str(),
+            100.0 * minimumReturn,
+            100.0 * maximumReturn);
+        _status.setText(message);
     }
 };

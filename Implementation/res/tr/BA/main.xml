@@ -6,10 +6,16 @@
         <Res id="optimizationTab" tr="Optimizacija"/>
         <Res id="frontierTab" tr="Efikasna granica"/>
         <Res id="weightsTab" tr="Težine portfolija"/>
-        <Res id="dataInstructions" tr="Učitajte CSV matricu periodičnih prinosa imovine. Vrijednosti moraju biti decimalne; na primjer, 0.012 predstavlja 1.2 posto."/>
+        <Res id="dataInstructions" tr="Učitajte periodične prinose iz CSV fajla ili koristite ugrađeni sintetički demonstracijski primjer. Prinosi moraju biti decimalni; na primjer, 0.012 predstavlja 1.2 posto."/>
         <Res id="selectedFile" tr="Odabrani fajl:"/>
         <Res id="loadCsv" tr="Učitaj CSV..."/>
         <Res id="loadSample" tr="Učitaj sintetički primjer"/>
+        <Res id="showCsvFormat" tr="CSV format..."/>
+        <Res id="loadCsvTooltip" tr="Učitajte matricu periodičnih prinosa odvojenu zarezima."/>
+        <Res id="loadSampleTooltip" tr="Učitajte ugrađene determinističke sintetičke demonstracijske podatke."/>
+        <Res id="csvFormatTooltip" tr="Prikažite zahtijevanu CSV strukturu i pravila validacije."/>
+        <Res id="csvFormatTitle" tr="Format CSV ulaza"/>
+        <Res id="csvFormatHelp" tr="Redovi predstavljaju periode posmatranja, a kolone investicije.&#10;&#10;Primjer:&#10;Period,Investicija A,Investicija B&#10;2026-01,0.012,0.004&#10;2026-02,-0.006,0.008&#10;&#10;Zahtjevi:&#10;- vrijednosti su odvojene zarezima&#10;- zaglavlje sadrži jedinstvene nazive investicija&#10;- najmanje dvije investicije i dva posmatranja&#10;- decimalni prinosi koriste tačku; 0.012 znači 1.2 posto&#10;- nema praznih niti neispravnih numeričkih vrijednosti&#10;- opcionalna prva kolona može se zvati Date, Period, Time, Timestamp ili Observation"/>
         <Res id="openCsv" tr="Otvori podatke o prinosima"/>
         <Res id="csvFiles" tr="CSV fajlovi"/>
         <Res id="noData" tr="Podaci o prinosima nisu učitani."/>
@@ -20,6 +26,15 @@
         <Res id="buildFrontier" tr="Izgradi efikasnu granicu"/>
         <Res id="verifyBackend" tr="Provjeri natID Matrix backend"/>
         <Res id="optimizationReady" tr="Učitajte podatke, zatim optimizirajte jedan ciljani prinos ili izgradite cijelu efikasnu granicu."/>
+        <Res id="optimizationDataReady" tr="Podaci su učitani. Dopustivi raspon ciljanog prinosa je %.6f%% do %.6f%%. Odaberite cilj ili izgradite efikasnu granicu."/>
+        <Res id="backendTooltip" tr="Odaberite natID backend za rješavanje KKT linearnih sistema."/>
+        <Res id="targetReturnTooltip" tr="Prinos po periodu posmatranja u decimalnom obliku; unesite 0.01 za 1 posto."/>
+        <Res id="frontierPointsTooltip" tr="Broj problema s različitim ciljanim prinosima korištenih za izgradnju efikasne granice."/>
+        <Res id="optimizeTargetTooltip" tr="Izračunajte portfolio minimalne varijanse za odabrani ciljani prinos."/>
+        <Res id="buildFrontierTooltip" tr="Riješite niz problema s različitim ciljanim prinosima i izgradite efikasnu granicu."/>
+        <Res id="exportFrontierTooltip" tr="Izvezite efikasnu granicu, aktivna ograničenja i težine portfolija u CSV."/>
+        <Res id="compareBackendsTooltip" tr="Riješite isti problem pomoću oba natID backenda i uporedite rezultate."/>
+        <Res id="verifyBackendTooltip" tr="Provjerite oba natID backenda na poznatom linearnom sistemu 2 x 2."/>
         <Res id="optimizationError" tr="Greška pri optimizaciji portfolija"/>
         <Res id="frontierError" tr="Greška pri izgradnji efikasne granice"/>
         <Res id="backendSuccess" tr="Matrix backend je uspješno provjeren na linearnom sistemu 2 x 2."/>

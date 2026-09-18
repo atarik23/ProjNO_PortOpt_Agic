@@ -22,6 +22,13 @@ public:
         , _frontierView(_state)
         , _weightsView(_state)
     {
+        _dataView.setOnDataLoaded([this]()
+        {
+            _optimizationView.onDataLoaded();
+            _frontierView.refresh();
+            _weightsView.refresh();
+        });
+
         _optimizationView.setOnResultsChanged([this]()
         {
             _frontierView.refresh();

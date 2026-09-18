@@ -12,7 +12,9 @@
 #include <gui/VerticalLayout.h>
 #include <gui/View.h>
 
+#include <functional>
 #include <string>
+#include <utility>
 
 class DataView : public gui::View
 {
@@ -22,10 +24,12 @@ class DataView : public gui::View
     gui::LineEdit _filePath;
     gui::Button _loadCsv;
     gui::Button _loadSample;
+    gui::Button _showCsvFormat;
     gui::HorizontalLayout _fileLayout;
     gui::HorizontalLayout _buttonLayout;
     gui::TextEdit _summary;
     gui::VerticalLayout _layout;
+    std::function<void()> _onDataLoaded;
 
     void loadPath(const td::String& fileName)
     {
@@ -39,6 +43,9 @@ class DataView : public gui::View
         _filePath.setText(fileName);
         const std::string summary = _state.summary();
         _summary.setText(td::String(summary.c_str()));
+
+        if (_onDataLoaded)
+            _onDataLoaded();
     }
 
 public:
@@ -48,8 +55,9 @@ public:
         , _fileLabel(tr("selectedFile"))
         , _loadCsv(tr("loadCsv"))
         , _loadSample(tr("loadSample"))
+        , _showCsvFormat(tr("showCsvFormat"))
         , _fileLayout(2)
-        , _buttonLayout(3)
+        , _buttonLayout(4)
         , _layout(4)
     {
         _filePath.setAsReadOnly();
@@ -57,8 +65,12 @@ public:
         _summary.setText(tr("noData"));
         _loadCsv.setType(gui::Button::Type::Constructive);
 
+        _loadCsv.setToolTip(tr("loadCsvTooltip"));
+        _loadSample.setToolTip(tr("loadSampleTooltip"));
+        _showCsvFormat.setToolTip(tr("csvFormatTooltip"));
+
         _fileLayout << _fileLabel << _filePath;
-        _buttonLayout << _loadCsv << _loadSample;
+        _buttonLayout << _loadCsv << _loadSample << _showCsvFormat;
         _buttonLayout.appendSpacer();
         _layout << _description << _fileLayout << _buttonLayout << _summary;
         setLayout(&_layout);
@@ -79,6 +91,15 @@ public:
         {
             loadPath(gui::getResFileName(":sampleReturns"));
         });
+
+        _showCsvFormat.onClick([this]()
+        {
+            gui::Alert::show(tr("csvFormatTitle"), tr("csvFormatHelp"));
+        });
+    }
+
+    void setOnDataLoaded(std::function<void()> callback)
+    {
+        _onDataLoaded = std::move(callback);
     }
 };
-

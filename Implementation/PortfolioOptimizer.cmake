@@ -36,14 +36,6 @@ target_link_libraries(portfolio_core
     optimized ${MATRIX_LIB_RELEASE}
 )
 
-target_link_libraries(portfolio_core
-    PUBLIC
-    debug ${MU_LIB_DEBUG}
-    debug ${MATRIX_LIB_DEBUG}
-    optimized ${MU_LIB_RELEASE}
-    optimized ${MATRIX_LIB_RELEASE}
-)
-
 file(GLOB_RECURSE PORTFOLIO_APP_SOURCES CONFIGURE_DEPENDS
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
 )

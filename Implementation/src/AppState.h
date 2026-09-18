@@ -453,6 +453,15 @@ public:
                    << ", volatility = " << 100.0 * _statistics.standardDeviations[asset]
                    << "%\n";
         }
+
+        const auto [minimumReturn, maximumReturn] = std::minmax_element(
+            _statistics.meanReturns.begin(),
+            _statistics.meanReturns.end());
+
+        output << "\nFeasible long-only target-return range: "
+               << 100.0 * *minimumReturn << "% to "
+               << 100.0 * *maximumReturn << "%.";
+        output << "\nReturns and risk are expressed per observation period.";
         output << "\nThe covariance matrix has been estimated using the unbiased sample estimator (n - 1).";
         return output.str();
     }
