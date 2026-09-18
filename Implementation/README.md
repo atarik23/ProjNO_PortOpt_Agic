@@ -41,7 +41,9 @@ The non-negativity constraints enforce a long-only portfolio. An asset belongs t
 - efficient-frontier and portfolio-weight CSV export
 - English and Bosnian GUI resources
 - automated numerical and data-validation tests
-- interactive target-return exploration
+- interactive Portfolio Explorer with synchronized target-return controls
+- representative frontier landmarks: Minimum Risk, Balanced, and Highest Return
+- selected-portfolio return, risk, variance, and allocation summary
 - selected-portfolio allocation visualization
 - bundled real-market ETF return sample
 
@@ -127,16 +129,27 @@ The source data originates from the public [manisahni/marketdata](https://github
 
 1. Open the **Return Data** tab.
 2. Load a CSV file, select **Load Synthetic Sample**, or select **Load Real Market Sample**.
-3. Open the **Optimization** tab.
-4. Select the dense or sparse natID backend.
-5. Enter a feasible target return.
-6. Select **Optimize Target** to solve one portfolio.
-7. Select **Build Efficient Frontier** to generate multiple portfolios.
-8. Inspect the **Efficient Frontier** and **Portfolio Weights** tabs.
-9. Optionally compare the two matrix backends.
-10. Export the complete frontier to CSV.
+3. Open the **Portfolio Explorer** tab.
+4. Set a feasible target return using the precise input or synchronized slider.
+5. Select **Optimize Target** to solve a single long-only portfolio.
+6. Select **Build Efficient Frontier** to construct a family of optimal portfolios.
+7. Explore representative frontier solutions using **Minimum Risk**, **Balanced**, and **Highest Return**.
+8. Inspect the selected portfolio's expected return, risk, variance, allocation, active-set iterations, and active constraints.
+9. Use the **Efficient Frontier**, **Selected Allocation**, and **Portfolio Weights** tabs for detailed visual analysis.
+10. Optionally select the dense or sparse natID matrix backend and compare their numerical solutions.
+11. Export the efficient frontier or portfolio-weight data to CSV.
+
+The three portfolio landmarks are navigation aids over already computed efficient-frontier solutions. They are not financial recommendations.
 
 Target returns use the same periodic scale as the loaded data.
+
+### Portfolio Explorer
+
+The Portfolio Explorer is the central workspace for selecting and inspecting an optimized portfolio. User-facing portfolio controls and results are presented separately from lower-level numerical information.
+
+The selected-portfolio summary reports expected return, risk, variance, and asset allocation. Numerical optimization details expose the selected natID matrix backend, active-set iteration count, and active zero-weight constraints.
+
+After the efficient frontier has been constructed, **Minimum Risk**, **Balanced**, and **Highest Return** select the first, middle, and final sampled frontier solutions, respectively. Selecting a landmark synchronizes the target-return controls and the visualizations without introducing a separate optimization model.
 
 ## Exported CSV format
 
