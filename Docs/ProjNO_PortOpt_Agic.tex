@@ -60,13 +60,15 @@ graphical interface and for two interchangeable linear-system backends:
 factorization. Repeated solutions from the global minimum-variance return to
 the largest feasible asset return form the efficient frontier. The application
 also visualizes individual assets, the selected portfolio, changes of the
-active set, and portfolio weights across target returns. On the bundled
-five-asset, 24-period data set, the global minimum-variance portfolio achieves
-a periodic return of $0.726733\%$ at $0.134594\%$ risk. At a $1\%$ target, the
-solver converges in six iterations with two active bounds and $0.281134\%$
-risk. Dense and sparse solutions agree to approximately machine precision.
-Automated tests additionally cover analytical cases, feasibility and KKT
-conditions, invalid inputs, frontier construction, and two 20-asset systems.
+active set, and portfolio weights across target returns. A second bundled sample 
+applies the same pipeline to 72 monthly observations for five market-traded ETFs 
+derived from public adjusted-close data. On the bundled five-asset, 24-period data 
+set, the global minimum-variance portfolio achieves a periodic return of $0.726733\%$ 
+at $0.134594\%$ risk. At a $1\%$ target, the solver converges in six iterations 
+with two active bounds and $0.281134\%$ risk. Dense and sparse solutions agree
+to approximately machine precision. Automated tests additionally cover analytical 
+cases, feasibility and KKT conditions, invalid inputs, frontier construction, and 
+two 20-asset systems.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -318,12 +320,25 @@ constructs summaries, compares both backends, and exports the frontier. The
 export contains target and achieved returns, risk, variance, iteration count,
 active-constraint names, and every asset weight at full double precision.
 
-The natID interface contains separate views for return data, optimization,
-the efficient frontier, and weight paths. The optimization view disables
-data-dependent controls until a valid matrix has been loaded and adjusts the
-numeric target limits to the feasible interval in \eqref{eq:feasible-range}.
-The risk-return chart draws individual assets, the efficient frontier, and a
-distinct marker for the most recently optimized portfolio. The weight chart
+The natID interface contains separate views for return data, the central
+Portfolio Explorer, the efficient frontier, selected allocation, and portfolio
+weight paths. The Portfolio Explorer synchronizes a precise target-return input
+with an interactive slider and presents the expected return, risk, variance,
+and asset allocation of the selected solution. After the efficient frontier
+has been constructed, three navigation landmarks---Minimum Risk, Balanced, and
+Highest Return---select the first, middle, and final sampled frontier solutions,
+respectively. These landmarks do not introduce a separate financial model or
+recommendation criterion; they provide convenient access to solutions already
+computed by the numerical optimizer.
+
+Numerical information remains explicitly available in the same workspace,
+including the selected natID matrix backend, active-set iteration count, active
+zero-weight constraints, and dense--sparse comparison. Data-dependent controls
+are disabled until a valid return matrix has been loaded, and the target-return
+limits are adjusted to the feasible interval in
+\eqref{eq:feasible-range}. The risk-return chart draws individual assets, the
+efficient frontier, and a distinct marker for the selected portfolio. A
+separate allocation view displays its weights, while the weight-path chart
 plots $w_i(r)$ for every asset and marks sampled positions where the active set
 changes. English and Bosnian resources use identical translation keys. A CSV
 format panel documents the expected input directly inside the application.
@@ -364,6 +379,29 @@ diversification effect and causes several bound constraints to change status
 across the frontier. The example is therefore more informative for the active-
 set method than a diagonal covariance matrix, while remaining small enough for
 manual interpretation.
+
+\subsection{Real-Market Demonstration Data}
+
+In addition to the deterministic synthetic data set, the final application
+includes an optimizer-ready real-market sample derived from a public
+adjusted-close data set \cite{marketdata} containing SPY, QQQ, IEF, LQD,
+and GLD. The data comprise 72 monthly return observations from January 2020
+through December 2025. Monthly observations were derived from daily adjusted
+closing prices by retaining the final available trading observation of each
+calendar month and computing
+\begin{equation}
+    r_t = \frac{P_t}{P_{t-1}} - 1.
+    \label{eq:market-return}
+\end{equation}
+Both the adjusted-close source subset and the derived monthly-return matrix are
+bundled with the project so that the transformation remains reproducible.
+
+For this sample, the estimated periodic mean returns for SPY, QQQ, IEF, LQD,
+and GLD are approximately $1.2919\%$, $1.7084\%$, $0.0279\%$, $0.1268\%$, and
+$1.5143\%$, respectively. Their corresponding sample standard deviations are
+approximately $4.9456\%$, $5.9408\%$, $2.1380\%$, $2.8491\%$, and $4.2563\%$.
+The sample is provided as a realistic demonstration of the same optimization
+pipeline rather than as evidence of future investment performance.
 
 \subsection{Automated Numerical Tests}
 
@@ -535,8 +573,8 @@ advantage for either storage scheme.
 \begin{figure}[!t]
 \centering
 \imageorplaceholder{Images/backend_comparison.png}{\columnwidth}{1.65in}
-\caption{Optimization view showing the numerical comparison of the two natID
-matrix backends.}
+\caption{Portfolio Explorer showing the selected portfolio together with
+numerical optimization details and the dense--sparse natID backend comparison.}
 \label{fig:comparison}
 \end{figure}
 
@@ -562,9 +600,11 @@ time.
 
 The bundled data are synthetic and were chosen for deterministic verification
 and clear visualization. They demonstrate the numerical method, not a trading
-strategy. A practical deployment would require a documented historical data
-source, frequency and currency normalization, treatment of missing values,
-out-of-sample evaluation, and sensitivity analysis. From a numerical
+strategy. The bundled real-market sample demonstrates that the same pipeline can operate
+on historical market observations, but it remains an in-sample demonstration
+rather than an investment study. A practical deployment would additionally
+require explicit frequency and currency normalization, systematic treatment of
+missing values, out-of-sample evaluation, and sensitivity analysis. From a numerical
 perspective, larger or nearly dependent data sets may also require stronger
 covariance estimation, scaling, or specialized symmetric-indefinite
 factorization. These extensions are intentionally outside the scope of the
@@ -613,6 +653,10 @@ Baltimore, MD, USA: Johns Hopkins University Press, 2013.
 \bibitem{davis2006}
 T. A. Davis, \emph{Direct Methods for Sparse Linear Systems}.
 Philadelphia, PA, USA: Society for Industrial and Applied Mathematics, 2006.
+
+\bibitem{marketdata}
+M. Sahni, ``marketdata,'' GitHub repository. [Online]. Available:
+\url{https://github.com/manisahni/marketdata}. Accessed: Sep. 18, 2026.
 
 \bibitem{natid}
 I. D\v{z}afi\'{c}, ``natID: Native Interface Design for macOS, Linux, and
