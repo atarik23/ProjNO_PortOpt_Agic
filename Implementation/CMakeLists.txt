@@ -27,3 +27,19 @@ include(${NATID_SDK_ROOT}/DevEnv/natGUI.cmake)
 include(${NATID_SDK_ROOT}/DevEnv/MatrixLib.cmake)
 
 include(PortfolioOptimizer.cmake)
+
+set(GUI_TARGET ${PORTFOLIO_APP_NAME})
+if(APPLE AND NOT CMAKE_GENERATOR STREQUAL "Xcode" AND TARGET ${GUI_TARGET})
+    set(PLIST_TOOL /usr/libexec/PlistBuddy)
+    set(BUNDLE_PLIST $<TARGET_BUNDLE_DIR:${GUI_TARGET}>/Contents/Info.plist)
+    add_custom_command(TARGET ${GUI_TARGET} POST_BUILD
+        COMMAND ${PLIST_TOOL} -c "Set :CFBundleExecutable ${GUI_TARGET}" ${BUNDLE_PLIST}
+        COMMAND ${PLIST_TOOL} -c "Set :CFBundleName ${GUI_TARGET}" ${BUNDLE_PLIST}
+        COMMAND ${PLIST_TOOL} -c "Set :CFBundleIdentifier com.example.portfoliooptimizer" ${BUNDLE_PLIST}
+        COMMAND ${PLIST_TOOL} -c "Set :CFBundlePackageType APPL" ${BUNDLE_PLIST}
+        COMMAND ${PLIST_TOOL} -c "Set :CFBundleDevelopmentRegion en" ${BUNDLE_PLIST}
+        COMMAND ${PLIST_TOOL} -c "Set :LSMinimumSystemVersion 12.3" ${BUNDLE_PLIST}
+        COMMAND codesign --force --deep -s - $<TARGET_BUNDLE_DIR:${GUI_TARGET}>
+        COMMENT "Fixing Info.plist and signing the app bundle"
+    )
+endif()
