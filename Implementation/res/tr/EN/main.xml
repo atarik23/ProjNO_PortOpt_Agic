@@ -3,7 +3,7 @@
     <Translations>
         <Res id="appTitle" tr="Mean-Variance Portfolio Explorer"/>
         <Res id="dataTab" tr="Return Data"/>
-        <Res id="optimizationTab" tr="Optimization"/>
+        <Res id="optimizationTab" tr="Portfolio Explorer"/>
         <Res id="frontierTab" tr="Efficient Frontier"/>
         <Res id="allocationTab" tr="Selected Allocation"/>
         <Res id="weightsTab" tr="Portfolio Weights"/>
@@ -28,10 +28,22 @@
         <Res id="noData" tr="No return data loaded."/>
         <Res id="loadError" tr="Data Loading Error"/>
         <Res id="targetReturn" tr="Target return:"/>
-        <Res id="targetSlider" tr="Explore target:"/>
+        <Res id="targetSlider" tr="Adjust target return:"/>
         <Res id="frontierPoints" tr="Efficient-frontier points:"/>
         <Res id="optimizeTarget" tr="Optimize Target"/>
         <Res id="buildFrontier" tr="Build Efficient Frontier"/>
+        <Res id="landmarks" tr="Explore portfolios"/>
+        <Res id="minimumRisk" tr="Minimum Risk"/>
+        <Res id="balanced" tr="Balanced"/>
+        <Res id="highestReturn" tr="Highest Return"/>
+        <Res id="minimumRiskTooltip" tr="Select the first, minimum-variance efficient-frontier solution."/>
+        <Res id="balancedTooltip" tr="Select the middle sampled efficient-frontier solution."/>
+        <Res id="highestReturnTooltip" tr="Select the final, highest-return efficient-frontier solution."/>
+        <Res id="landmarkError" tr="Frontier Landmark Error"/>
+        <Res id="selectedPortfolioHeading" tr="Selected Portfolio"/>
+        <Res id="noSelectedPortfolio" tr="Optimize a target return or select a frontier landmark to inspect a portfolio."/>
+        <Res id="selectedPortfolioSummary" tr="Expected return: %.4f%%&#10;Risk: %.4f%%&#10;Variance: %.8f&#10;Matrix backend: %s"/>
+        <Res id="numericalDetails" tr="Numerical optimization details"/>
         <Res id="verifyBackend" tr="Verify natID Matrix Backend"/>
         <Res id="optimizationReady" tr="Load return data, then optimize one target return or construct the complete efficient frontier."/>
         <Res id="optimizationDataReady" tr="Return data loaded. Feasible target-return range: %.6f%% to %.6f%%. Choose a target or construct the efficient frontier."/>
@@ -62,7 +74,7 @@
 		<Res id="individualAssetsLegend" tr="Individual assets"/>
 		<Res id="selectedPortfolioLegend" tr="Selected portfolio"/>
 		<Res id="activeSetChangeLegend" tr="Active-set change"/>
-		<Res id="matrixBackend" tr="Linear-system backend:"/>
+		<Res id="matrixBackend" tr="Matrix backend:"/>
 		<Res id="denseBackend" tr="Dense (dense::DblMatrix)"/>
 		<Res id="sparseBackend" tr="Sparse (sparse::DblSolver)"/>
 		<Res id="compareBackends" tr="Compare Dense and Sparse"/>

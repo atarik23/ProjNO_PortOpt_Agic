@@ -3,7 +3,7 @@
     <Translations>
         <Res id="appTitle" tr="Istraživač portfolija sredina-varijansa"/>
         <Res id="dataTab" tr="Podaci o prinosima"/>
-        <Res id="optimizationTab" tr="Optimizacija"/>
+        <Res id="optimizationTab" tr="Istraživač portfolija"/>
         <Res id="frontierTab" tr="Efikasna granica"/>
         <Res id="allocationTab" tr="Odabrana alokacija"/>
         <Res id="weightsTab" tr="Težine portfolija"/>
@@ -28,10 +28,22 @@
         <Res id="noData" tr="Podaci o prinosima nisu učitani."/>
         <Res id="loadError" tr="Greška pri učitavanju podataka"/>
         <Res id="targetReturn" tr="Ciljani prinos:"/>
-        <Res id="targetSlider" tr="Istraži cilj:"/>
+        <Res id="targetSlider" tr="Prilagodi ciljani prinos:"/>
         <Res id="frontierPoints" tr="Broj tačaka efikasne granice:"/>
         <Res id="optimizeTarget" tr="Optimiziraj ciljani prinos"/>
         <Res id="buildFrontier" tr="Izgradi efikasnu granicu"/>
+        <Res id="landmarks" tr="Istraži portfolije"/>
+        <Res id="minimumRisk" tr="Minimalni rizik"/>
+        <Res id="balanced" tr="Srednja tačka"/>
+        <Res id="highestReturn" tr="Najviši prinos"/>
+        <Res id="minimumRiskTooltip" tr="Odaberite prvo rješenje efikasne granice s minimalnom varijansom."/>
+        <Res id="balancedTooltip" tr="Odaberite srednju uzorkovanu tačku efikasne granice."/>
+        <Res id="highestReturnTooltip" tr="Odaberite posljednje rješenje efikasne granice s najvišim prinosom."/>
+        <Res id="landmarkError" tr="Greška pri odabiru tačke granice"/>
+        <Res id="selectedPortfolioHeading" tr="Odabrani portfolio"/>
+        <Res id="noSelectedPortfolio" tr="Optimizirajte ciljani prinos ili odaberite tačku efikasne granice za pregled portfolija."/>
+        <Res id="selectedPortfolioSummary" tr="Očekivani prinos: %.4f%%&#10;Rizik: %.4f%%&#10;Varijansa: %.8f&#10;Matrix backend: %s"/>
+        <Res id="numericalDetails" tr="Detalji numeričke optimizacije"/>
         <Res id="verifyBackend" tr="Provjeri natID Matrix backend"/>
         <Res id="optimizationReady" tr="Učitajte podatke, zatim optimizirajte jedan ciljani prinos ili izgradite cijelu efikasnu granicu."/>
         <Res id="optimizationDataReady" tr="Podaci su učitani. Dopustivi raspon ciljanog prinosa je %.6f%% do %.6f%%. Odaberite cilj ili izgradite efikasnu granicu."/>
@@ -62,7 +74,7 @@
 		<Res id="individualAssetsLegend" tr="Pojedinačne investicije"/>
 		<Res id="selectedPortfolioLegend" tr="Odabrani portfolio"/>
 		<Res id="activeSetChangeLegend" tr="Promjena aktivnog skupa"/>
-		<Res id="matrixBackend" tr="Backend linearnog sistema:"/>
+		<Res id="matrixBackend" tr="Matrični backend:"/>
 		<Res id="denseBackend" tr="Gusta matrica (dense::DblMatrix)"/>
 		<Res id="sparseBackend" tr="Rijetka matrica (sparse::DblSolver)"/>
 		<Res id="compareBackends" tr="Uporedi gusti i rijetki backend"/>

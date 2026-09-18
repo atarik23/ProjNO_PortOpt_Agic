@@ -21,6 +21,10 @@ class AppState
     portfolio::Statistics _statistics;
     portfolio::PortfolioSolution _solution;
     portfolio::EfficientFrontier _frontier;
+    portfolio::LinearSystemBackend _solutionBackend =
+        portfolio::LinearSystemBackend::Dense;
+    portfolio::LinearSystemBackend _frontierBackend =
+        portfolio::LinearSystemBackend::Dense;
     std::string _sourcePath;
     bool _hasData = false;
     bool _hasSolution = false;
@@ -68,6 +72,7 @@ public:
         }
 
         _solution = std::move(solution);
+        _solutionBackend = backend;
         _hasSolution = true;
         return true;
     }
@@ -93,7 +98,30 @@ public:
         }
 
         _frontier = std::move(frontier);
+        _frontierBackend = backend;
         _hasFrontier = true;
+        return true;
+    }
+
+    bool selectFrontierPoint(std::size_t pointIndex, std::string& error)
+    {
+        error.clear();
+
+        if (!_hasFrontier || _frontier.points.empty())
+        {
+            error = "Build the efficient frontier before selecting a landmark.";
+            return false;
+        }
+
+        if (pointIndex >= _frontier.points.size())
+        {
+            error = "The selected efficient-frontier point is not available.";
+            return false;
+        }
+
+        _solution = _frontier.points[pointIndex];
+        _solutionBackend = _frontierBackend;
+        _hasSolution = true;
         return true;
     }
 
@@ -429,6 +457,11 @@ public:
     [[nodiscard]] const portfolio::PortfolioSolution& solution() const noexcept
     {
         return _solution;
+    }
+
+    [[nodiscard]] portfolio::LinearSystemBackend solutionBackend() const noexcept
+    {
+        return _solutionBackend;
     }
 
     [[nodiscard]] const portfolio::EfficientFrontier& frontier() const noexcept

@@ -2,6 +2,7 @@
 
 #include "../AppState.h"
 #include "../numerics/MatrixBackend.h"
+#include "ChartCanvas.h"
 
 #include <gui/Alert.h>
 #include <gui/Button.h>
@@ -13,10 +14,12 @@
 #include <gui/NumericEdit.h>
 #include <gui/Slider.h>
 #include <gui/TextEdit.h>
+#include <gui/VerticalLayout.h>
 #include <gui/View.h>
 #include <gui/FileDialog.h>
 
 #include <algorithm>
+#include <cstdio>
 #include <functional>
 #include <string>
 #include <utility>
@@ -40,12 +43,24 @@ class OptimizationView : public gui::View
     gui::Button _buildFrontier;
     gui::Button _exportFrontier;
     gui::Button _compareBackends;
-    gui::Button _verifyBackend;
+
+    gui::Label _landmarksLabel;
+    gui::Button _minimumRisk;
+    gui::Button _balanced;
+    gui::Button _highestReturn;
+
+    gui::Label _selectedPortfolioHeading;
+    gui::TextEdit _selectedPortfolioSummary;
+
+    gui::Label _numericalDetailsHeading;
 
     gui::TextEdit _status;
     gui::HorizontalLayout _primaryButtonLayout;
+    gui::HorizontalLayout _landmarkButtonLayout;
     gui::HorizontalLayout _verificationButtonLayout;
-    gui::GridLayout _layout;
+    gui::GridLayout _controlLayout;
+    gui::VerticalLayout _resultLayout;
+    gui::HorizontalLayout _layout;
 
     std::function<void()> _onResultsChanged;
 
@@ -54,6 +69,112 @@ class OptimizationView : public gui::View
         return _backend.getSelectedIndex() == 1
             ? portfolio::LinearSystemBackend::Sparse
             : portfolio::LinearSystemBackend::Dense;
+    }
+
+    void updateSelectedPortfolioDisplay()
+    {
+        if (!_state.hasSolution() || !_state.solution().converged)
+        {
+            _selectedPortfolioSummary.setText(tr("noSelectedPortfolio"));
+            return;
+        }
+
+        const auto& solution = _state.solution();
+        const auto& assetNames = _state.data().assetNames;
+
+        std::string summary;
+        char line[128];
+
+        std::snprintf(
+            line, sizeof(line),
+            "Expected return: %.4f%%\n"
+            "Risk: %.4f%%\n"
+            "Variance: %.6f\n\n"
+            "Allocation:\n",
+            100.0 * solution.expectedReturn,
+            100.0 * solution.risk,
+            solution.variance);
+
+        summary += line;
+
+        const std::size_t assetCount =
+            std::min(assetNames.size(), solution.weights.size());
+
+        for (std::size_t asset = 0; asset < assetCount; ++asset)
+        {
+            std::snprintf(
+                line, sizeof(line),
+                "%s: %.2f%%\n",
+                assetNames[asset].c_str(),
+                100.0 * solution.weights[asset]);
+
+            summary += line;
+        }
+
+        _selectedPortfolioSummary.setText(td::String(summary.c_str()));
+    }
+
+    void showCurrentSolutionDetails()
+    {
+        const auto& solution = _state.solution();
+        const auto& assetNames = _state.data().assetNames;
+
+        std::string details;
+        char line[256];
+
+        std::snprintf(
+            line,
+            sizeof(line),
+            "Backend: %s\n"
+            "Active-set iterations: %zu\n"
+            "Active constraints: %zu",
+            portfolio::MatrixBackend::name(_state.solutionBackend()),
+            solution.iterations,
+            solution.activeSet.size());
+
+        details += line;
+
+        if (!solution.activeSet.empty())
+        {
+            details += "\nZero-weight constraints: ";
+
+            for (std::size_t i = 0; i < solution.activeSet.size(); ++i)
+            {
+                const std::size_t asset = solution.activeSet[i];
+
+                if (asset < assetNames.size())
+                {
+                    if (i > 0)
+                        details += ", ";
+
+                    details += assetNames[asset];
+                }
+            }
+        }
+
+        _status.setText(td::String(details.c_str()));
+        updateSelectedPortfolioDisplay();
+
+        if (_onResultsChanged)
+            _onResultsChanged();
+    }
+
+    void selectLandmark(std::size_t pointIndex)
+    {
+        std::string error;
+        if (!_state.selectFrontierPoint(pointIndex, error))
+        {
+            _status.setText(td::String(error.c_str()));
+            gui::Alert::show(
+                tr("landmarkError"),
+                td::String(error.c_str()));
+            return;
+        }
+
+        const double targetReturn = _state.solution().targetReturn;
+        _targetReturn.setValue(targetReturn);
+        _targetSlider.setValue(targetReturn, false);
+        showCurrentSolutionDetails();
     }
 
 public:
@@ -70,10 +191,22 @@ public:
         , _buildFrontier(tr("buildFrontier"))
         , _exportFrontier(tr("exportFrontier"))
         , _compareBackends(tr("compareBackends"))
-        , _verifyBackend(tr("verifyBackend"))
+        , _landmarksLabel(tr("landmarks"), gui::Font::ID::SystemBold)
+        , _minimumRisk(tr("minimumRisk"))
+        , _balanced(tr("balanced"))
+        , _highestReturn(tr("highestReturn"))
+        , _selectedPortfolioHeading(
+            tr("selectedPortfolioHeading"),
+            gui::Font::ID::SystemBold)
+        , _numericalDetailsHeading(
+            tr("numericalDetails"),
+            gui::Font::ID::SystemBold)
         , _primaryButtonLayout(4)
-        , _verificationButtonLayout(3)
-        , _layout(7, 2)
+        , _landmarkButtonLayout(4)
+        , _verificationButtonLayout(2)
+        , _controlLayout(10, 2)
+        , _resultLayout(3)
+        , _layout(2)
     {
         _backend.addItem(tr("denseBackend"));
         _backend.addItem(tr("sparseBackend"));
@@ -92,6 +225,11 @@ public:
 
         _status.setAsReadOnly();
         _status.setText(tr("optimizationReady"));
+        _selectedPortfolioSummary.setAsReadOnly();
+        _selectedPortfolioSummary.setText(tr("noSelectedPortfolio"));
+        _selectedPortfolioSummary.setSizeLimits(
+            0, gui::Control::Limit::None,
+            260, gui::Control::Limit::Fixed);
 
         _optimizeTarget.setType(gui::Button::Type::Constructive);
 
@@ -103,7 +241,9 @@ public:
         _buildFrontier.setToolTip(tr("buildFrontierTooltip"));
         _exportFrontier.setToolTip(tr("exportFrontierTooltip"));
         _compareBackends.setToolTip(tr("compareBackendsTooltip"));
-        _verifyBackend.setToolTip(tr("verifyBackendTooltip"));
+        _minimumRisk.setToolTip(tr("minimumRiskTooltip"));
+        _balanced.setToolTip(tr("balancedTooltip"));
+        _highestReturn.setToolTip(tr("highestReturnTooltip"));
 
         _backend.disable();
         _targetReturn.disable();
@@ -113,25 +253,44 @@ public:
         _buildFrontier.disable();
         _exportFrontier.disable();
         _compareBackends.disable();
+        _minimumRisk.disable();
+        _balanced.disable();
+        _highestReturn.disable();
 
         _primaryButtonLayout << _optimizeTarget
             << _buildFrontier
             << _exportFrontier;
         _primaryButtonLayout.appendSpacer();
 
-        _verificationButtonLayout << _compareBackends
-            << _verifyBackend;
+        _landmarkButtonLayout << _minimumRisk
+            << _balanced
+            << _highestReturn;
+        _landmarkButtonLayout.appendSpacer();
+
+        _verificationButtonLayout << _compareBackends;
         _verificationButtonLayout.appendSpacer();
 
-        gui::GridComposer composer(_layout);
-        composer.appendRow(_backendLabel) << _backend;
+        gui::GridComposer composer(_controlLayout);
+
+        // Portfolio exploration
         composer.appendRow(_targetLabel) << _targetReturn;
         composer.appendRow(_targetSliderLabel) << _targetSlider;
-        composer.appendRow(_frontierPointsLabel) << _frontierPoints;
         composer.appendRow(_primaryButtonLayout, 0);
+        composer.appendRow(_landmarksLabel, 0);
+        composer.appendRow(_landmarkButtonLayout, 0);
+
+        // Numerical optimization
+        composer.appendRow(_numericalDetailsHeading, 0);
+        composer.appendRow(_backendLabel) << _backend;
+        composer.appendRow(_frontierPointsLabel) << _frontierPoints;
         composer.appendRow(_verificationButtonLayout, 0);
         composer.appendRow(_status, 0);
 
+        _resultLayout << _selectedPortfolioHeading
+            << _selectedPortfolioSummary;
+        _resultLayout.appendSpacer();
+
+        _layout << _controlLayout << _resultLayout;
         setLayout(&_layout);
 
         _targetSlider.onChangedValue([this]()
@@ -157,16 +316,7 @@ public:
                     return;
                 }
 
-                const std::string summary =
-                    std::string("Backend: ") +
-                    portfolio::MatrixBackend::name(backend) +
-                    "\n" +
-                    _state.solutionSummary();
-
-                _status.setText(td::String(summary.c_str()));
-
-                if (_onResultsChanged)
-                    _onResultsChanged();
+                showCurrentSolutionDetails();
             });
 
         _buildFrontier.onClick([this]()
@@ -197,10 +347,32 @@ public:
 
                 _status.setText(td::String(summary.c_str()));
                 _exportFrontier.disable(false);
+                _minimumRisk.disable(false);
+                _balanced.disable(false);
+                _highestReturn.disable(false);
 
                 if (_onResultsChanged)
                     _onResultsChanged();
             });
+
+        _minimumRisk.onClick([this]()
+        {
+            selectLandmark(0);
+        });
+
+        _balanced.onClick([this]()
+        {
+            const auto& points = _state.frontier().points;
+            if (!points.empty())
+                selectLandmark(points.size() / 2);
+        });
+
+        _highestReturn.onClick([this]()
+        {
+            const auto& points = _state.frontier().points;
+            if (!points.empty())
+                selectLandmark(points.size() - 1);
+        });
 
         _exportFrontier.onClick([this]()
             {
@@ -280,31 +452,6 @@ public:
 
                 _status.setText(td::String(report.c_str()));
             });
-
-        _verifyBackend.onClick([this]()
-            {
-                double first = 0.0;
-                double second = 0.0;
-                std::string error;
-
-                if (!portfolio::MatrixBackend::verify(first, second, error))
-                {
-                    _status.setText(td::String(error.c_str()));
-                    gui::Alert::show(
-                        tr("backendError"),
-                        td::String(error.c_str()));
-                    return;
-                }
-
-                td::String message;
-                message.format(
-                    "%s\nx = %.6f, y = %.6f",
-                    tr("backendSuccess").c_str(),
-                    first,
-                    second);
-
-                _status.setText(message);
-            });
     }
 
     void setOnResultsChanged(std::function<void()> callback)
@@ -344,6 +491,10 @@ public:
         _buildFrontier.disable(false);
         _compareBackends.disable(false);
         _exportFrontier.disable();
+        _minimumRisk.disable();
+        _balanced.disable();
+        _highestReturn.disable();
+        updateSelectedPortfolioDisplay();
 
         td::String message;
         message.format(
