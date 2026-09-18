@@ -23,7 +23,7 @@ For an estimated mean-return vector \(\mu\), covariance matrix \(\Sigma\), and t
 The non-negativity constraints enforce a long-only portfolio. An asset belongs to the active set when its bound is active, meaning \(w_i = 0\).
 
 ## Main features
-     
+
 - CSV loading of periodic asset returns
 - sample mean-return estimation
 - unbiased sample covariance estimation
@@ -263,6 +263,7 @@ Implementation/
 │   │   └── MatrixBackend.h
 │   ├── ui/
 │   │   ├── ChartCanvas.h
+│   │   ├── CsvFormatView.h
 │   │   ├── DataView.h
 │   │   ├── MainView.h
 │   │   └── OptimizationView.h
@@ -286,4 +287,4 @@ The implemented model assumes:
 - historical sample estimates for expected returns and covariance;
 - a single-period mean-variance model.
 
-These assumptions keep the implementation focused on the numerical optimization problem defined in the project proposal.
+These assumptions keep the implementation focused on the numerical optimization model and its computational solution.

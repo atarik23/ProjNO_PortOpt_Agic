@@ -9,6 +9,7 @@
 
 # CMake
 build/
+out/
 cmake-build-*/
 CMakeFiles/
 CMakeCache.txt
@@ -46,4 +47,4 @@ Thumbs.db
 .DS_Store
 
 # Locally exported results
-/portfolio_frontier*.csv
+portfolio_frontier*.csv

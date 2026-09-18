@@ -7,7 +7,6 @@ This project implements a long-only mean-variance portfolio optimizer using an a
 ## Repository structure
 
 - [`Implementation/`](Implementation/) — complete C++ implementation, natID resources, tests, and detailed build instructions
-- [`Docs/`](Docs/) — project proposal, technical report, and presentation materials
 
 ## Main features
 
@@ -19,7 +18,7 @@ This project implements a long-only mean-variance portfolio optimizer using an a
 - efficient-frontier construction
 - natID dense and sparse matrix backends
 - numerical backend comparison
-- interactive portfolio visualizations
+- portfolio visualizations
 - CSV export
 - automated numerical tests
 
