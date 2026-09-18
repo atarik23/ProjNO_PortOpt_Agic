@@ -5,7 +5,8 @@
         <Res id="dataTab" tr="Podaci o prinosima"/>
         <Res id="optimizationTab" tr="Optimizacija"/>
         <Res id="frontierTab" tr="Efikasna granica"/>
-        <Res id="allocationTab" tr="Odabrana alokacija"/>\n        <Res id="weightsTab" tr="Težine portfolija"/>
+        <Res id="allocationTab" tr="Odabrana alokacija"/>
+        <Res id="weightsTab" tr="Težine portfolija"/>
         <Res id="dataInstructions" tr="Učitajte periodične prinose iz CSV fajla ili koristite ugrađeni sintetički demonstracijski primjer. Prinosi moraju biti decimalni; na primjer, 0.012 predstavlja 1.2 posto."/>
         <Res id="selectedFile" tr="Odabrani fajl:"/>
         <Res id="loadCsv" tr="Učitaj CSV..."/>
@@ -24,7 +25,8 @@
         <Res id="csvFiles" tr="CSV fajlovi"/>
         <Res id="noData" tr="Podaci o prinosima nisu učitani."/>
         <Res id="loadError" tr="Greška pri učitavanju podataka"/>
-        <Res id="targetReturn" tr="Ciljani prinos:"/>\n        <Res id="targetSlider" tr="Istraži cilj:"/>
+        <Res id="targetReturn" tr="Ciljani prinos:"/>
+        <Res id="targetSlider" tr="Istraži cilj:"/>
         <Res id="frontierPoints" tr="Broj tačaka efikasne granice:"/>
         <Res id="optimizeTarget" tr="Optimiziraj ciljani prinos"/>
         <Res id="buildFrontier" tr="Izgradi efikasnu granicu"/>
@@ -32,7 +34,8 @@
         <Res id="optimizationReady" tr="Učitajte podatke, zatim optimizirajte jedan ciljani prinos ili izgradite cijelu efikasnu granicu."/>
         <Res id="optimizationDataReady" tr="Podaci su učitani. Dopustivi raspon ciljanog prinosa je %.6f%% do %.6f%%. Odaberite cilj ili izgradite efikasnu granicu."/>
         <Res id="backendTooltip" tr="Odaberite natID backend za rješavanje KKT linearnih sistema."/>
-        <Res id="targetReturnTooltip" tr="Prinos po periodu posmatranja u decimalnom obliku; unesite 0.01 za 1 posto."/>\n        <Res id="targetSliderTooltip" tr="Interaktivno odaberite cilj, zatim pritisnite Optimiziraj ciljani prinos."/>
+        <Res id="targetReturnTooltip" tr="Prinos po periodu posmatranja u decimalnom obliku; unesite 0.01 za 1 posto."/>
+        <Res id="targetSliderTooltip" tr="Interaktivno odaberite cilj, zatim pritisnite Optimiziraj ciljani prinos."/>
         <Res id="frontierPointsTooltip" tr="Broj problema s različitim ciljanim prinosima korištenih za izgradnju efikasne granice."/>
         <Res id="optimizeTargetTooltip" tr="Izračunajte portfolio minimalne varijanse za odabrani ciljani prinos."/>
         <Res id="buildFrontierTooltip" tr="Riješite niz problema s različitim ciljanim prinosima i izgradite efikasnu granicu."/>
@@ -48,7 +51,11 @@
         <Res id="targetReturnAxis" tr="Ciljani prinos"/>
         <Res id="weightAxis" tr="Težina u portfoliju"/>
         <Res id="frontierPlaceholder" tr="Izgradite efikasnu granicu za prikaz krive rizika i prinosa."/>
-        <Res id="weightsPlaceholder" tr="Izgradite efikasnu granicu za prikaz težina prema ciljanom prinosu."/>\n        <Res id="allocationTitle" tr="Alokacija odabranog portfolija"/>\n        <Res id="allocationAxis" tr="Raspodjela težina"/>\n        <Res id="allocationPlaceholder" tr="Optimizirajte ciljani prinos za prikaz alokacije portfolija."/>\n        <Res id="allocationHint" tr="Trake prikazuju udio portfolija dodijeljen svakoj investiciji."/>
+        <Res id="weightsPlaceholder" tr="Izgradite efikasnu granicu za prikaz težina prema ciljanom prinosu."/>
+        <Res id="allocationTitle" tr="Alokacija odabranog portfolija"/>
+        <Res id="allocationAxis" tr="Raspodjela težina"/>
+        <Res id="allocationPlaceholder" tr="Optimizirajte ciljani prinos za prikaz alokacije portfolija."/>
+        <Res id="allocationHint" tr="Trake prikazuju udio portfolija dodijeljen svakoj investiciji."/>
 		<Res id="frontierLegend" tr="Efikasna granica"/>
 		<Res id="individualAssetsLegend" tr="Pojedinačne investicije"/>
 		<Res id="selectedPortfolioLegend" tr="Odabrani portfolio"/>
