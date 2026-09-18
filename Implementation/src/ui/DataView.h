@@ -1,13 +1,16 @@
 #pragma once
 
 #include "../AppState.h"
+#include "CsvFormatView.h"
 
 #include <gui/Alert.h>
 #include <gui/Button.h>
+#include <gui/Dialog.h>
 #include <gui/FileDialog.h>
 #include <gui/HorizontalLayout.h>
 #include <gui/Label.h>
 #include <gui/LineEdit.h>
+#include <gui/Panel.h>
 #include <gui/TextEdit.h>
 #include <gui/VerticalLayout.h>
 #include <gui/View.h>
@@ -94,7 +97,16 @@ public:
 
         _showCsvFormat.onClick([this]()
         {
-            gui::Alert::show(tr("csvFormatTitle"), tr("csvFormatHelp"));
+            constexpr td::UINT4 dialogID = 1002;
+            gui::Panel::show<CsvFormatView>(
+                this,
+                tr("csvFormatTitle"),
+                gui::Size(640, 430),
+                dialogID,
+                {{gui::Dialog::Button::ID::OK,
+                  tr("Ok"),
+                  gui::Button::Type::Default}},
+                std::function<void(gui::Dialog*)>{[](gui::Dialog*) {}});
         });
     }
 

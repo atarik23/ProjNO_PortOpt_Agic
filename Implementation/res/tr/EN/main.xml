@@ -15,7 +15,11 @@
         <Res id="loadSampleTooltip" tr="Load the bundled deterministic synthetic demonstration data."/>
         <Res id="csvFormatTooltip" tr="Show the required CSV structure and validation rules."/>
         <Res id="csvFormatTitle" tr="CSV Input Format"/>
-        <Res id="csvFormatHelp" tr="Rows represent observation periods and columns represent assets.&#10;&#10;Example:&#10;Period,Asset A,Asset B&#10;2026-01,0.012,0.004&#10;2026-02,-0.006,0.008&#10;&#10;Requirements:&#10;- comma-separated values&#10;- a header row with unique asset names&#10;- at least two assets and two observations&#10;- decimal returns using a dot; 0.012 means 1.2 percent&#10;- no missing or non-finite values&#10;- the optional first column may be named Date, Period, Time, Timestamp, or Observation"/>
+        <Res id="csvFormatIntro" tr="Rows represent observation periods, columns represent assets, and returns use decimal form."/>
+        <Res id="csvFormatExampleHeading" tr="Example"/>
+        <Res id="csvFormatExample" tr="Period,Asset A,Asset B&#10;2026-01,0.012,0.004&#10;2026-02,-0.006,0.008"/>
+		<Res id="csvReqHeading" tr="Requirements"/>
+        <Res id="csvReqBody" tr="- Comma-separated values with a header row&#10;- Unique asset names&#10;- At least two assets and two observations&#10;- Decimal returns using a dot; 0.012 means 1.2 percent&#10;- No missing or non-finite values&#10;- Optional first column: Date, Period, Time, Timestamp, or Observation"/>
         <Res id="openCsv" tr="Open Return Data"/>
         <Res id="csvFiles" tr="CSV files"/>
         <Res id="noData" tr="No return data loaded."/>
@@ -45,6 +49,10 @@
         <Res id="weightAxis" tr="Portfolio weight"/>
         <Res id="frontierPlaceholder" tr="Build the efficient frontier to display the risk-return curve."/>
         <Res id="weightsPlaceholder" tr="Build the efficient frontier to display portfolio weights by target return."/>
+		<Res id="frontierLegend" tr="Efficient frontier"/>
+		<Res id="individualAssetsLegend" tr="Individual assets"/>
+		<Res id="selectedPortfolioLegend" tr="Selected portfolio"/>
+		<Res id="activeSetChangeLegend" tr="Active-set change"/>
 		<Res id="matrixBackend" tr="Linear-system backend:"/>
 		<Res id="denseBackend" tr="Dense (dense::DblMatrix)"/>
 		<Res id="sparseBackend" tr="Sparse (sparse::DblSolver)"/>

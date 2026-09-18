@@ -15,7 +15,11 @@
         <Res id="loadSampleTooltip" tr="Učitajte ugrađene determinističke sintetičke demonstracijske podatke."/>
         <Res id="csvFormatTooltip" tr="Prikažite zahtijevanu CSV strukturu i pravila validacije."/>
         <Res id="csvFormatTitle" tr="Format CSV ulaza"/>
-        <Res id="csvFormatHelp" tr="Redovi predstavljaju periode posmatranja, a kolone investicije.&#10;&#10;Primjer:&#10;Period,Investicija A,Investicija B&#10;2026-01,0.012,0.004&#10;2026-02,-0.006,0.008&#10;&#10;Zahtjevi:&#10;- vrijednosti su odvojene zarezima&#10;- zaglavlje sadrži jedinstvene nazive investicija&#10;- najmanje dvije investicije i dva posmatranja&#10;- decimalni prinosi koriste tačku; 0.012 znači 1.2 posto&#10;- nema praznih niti neispravnih numeričkih vrijednosti&#10;- opcionalna prva kolona može se zvati Date, Period, Time, Timestamp ili Observation"/>
+        <Res id="csvFormatIntro" tr="Redovi predstavljaju periode posmatranja, kolone investicije, a prinosi koriste decimalni oblik."/>
+        <Res id="csvFormatExampleHeading" tr="Primjer"/>
+        <Res id="csvFormatExample" tr="Period,Investicija A,Investicija B&#10;2026-01,0.012,0.004&#10;2026-02,-0.006,0.008"/>
+		<Res id="csvReqHeading" tr="Zahtjevi"/>
+		<Res id="csvReqBody" tr="- Vrijednosti odvojene zarezima i red zaglavlja&#10;- Jedinstveni nazivi investicija&#10;- Najmanje dvije investicije i dva posmatranja&#10;- Decimalni prinosi koriste tačku; 0.012 znači 1.2 posto&#10;- Nema praznih niti neispravnih numeričkih vrijednosti&#10;- Opcionalna prva kolona: Date, Period, Time, Timestamp ili Observation"/>
         <Res id="openCsv" tr="Otvori podatke o prinosima"/>
         <Res id="csvFiles" tr="CSV fajlovi"/>
         <Res id="noData" tr="Podaci o prinosima nisu učitani."/>
@@ -45,6 +49,10 @@
         <Res id="weightAxis" tr="Težina u portfoliju"/>
         <Res id="frontierPlaceholder" tr="Izgradite efikasnu granicu za prikaz krive rizika i prinosa."/>
         <Res id="weightsPlaceholder" tr="Izgradite efikasnu granicu za prikaz težina prema ciljanom prinosu."/>
+		<Res id="frontierLegend" tr="Efikasna granica"/>
+		<Res id="individualAssetsLegend" tr="Pojedinačne investicije"/>
+		<Res id="selectedPortfolioLegend" tr="Odabrani portfolio"/>
+		<Res id="activeSetChangeLegend" tr="Promjena aktivnog skupa"/>
 		<Res id="matrixBackend" tr="Backend linearnog sistema:"/>
 		<Res id="denseBackend" tr="Gusta matrica (dense::DblMatrix)"/>
 		<Res id="sparseBackend" tr="Rijetka matrica (sparse::DblSolver)"/>
