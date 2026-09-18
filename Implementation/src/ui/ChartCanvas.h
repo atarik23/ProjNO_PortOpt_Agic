@@ -151,6 +151,7 @@ public:
         , _yLabel(yLabel)
         , _emptyMessage(emptyMessage)
     {
+        setClipsToBounds();
     }
 
     void refresh()
