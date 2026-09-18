@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <DevRes>
     <Translations>
-        <Res id="appTitle" tr="Mean-Variance Portfolio Optimizer"/>
+        <Res id="appTitle" tr="Mean-Variance Portfolio Explorer"/>
         <Res id="dataTab" tr="Return Data"/>
         <Res id="optimizationTab" tr="Optimization"/>
         <Res id="frontierTab" tr="Efficient Frontier"/>
