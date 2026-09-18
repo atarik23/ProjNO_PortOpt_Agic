@@ -11,6 +11,7 @@
 #include <gui/HorizontalLayout.h>
 #include <gui/Label.h>
 #include <gui/NumericEdit.h>
+#include <gui/Slider.h>
 #include <gui/TextEdit.h>
 #include <gui/View.h>
 #include <gui/FileDialog.h>
@@ -29,6 +30,8 @@ class OptimizationView : public gui::View
 
     gui::Label _targetLabel;
     gui::NumericEdit _targetReturn;
+    gui::Label _targetSliderLabel;
+    gui::Slider _targetSlider;
 
     gui::Label _frontierPointsLabel;
     gui::NumericEdit _frontierPoints;
@@ -59,6 +62,8 @@ public:
         , _backendLabel(tr("matrixBackend"))
         , _targetLabel(tr("targetReturn"))
         , _targetReturn(td::real8)
+        , _targetSliderLabel(tr("targetSlider"))
+        , _targetSlider(gui::DataCtrl::Orientation::Horizontal, true)
         , _frontierPointsLabel(tr("frontierPoints"))
         , _frontierPoints(td::int4)
         , _optimizeTarget(tr("optimizeTarget"))
@@ -68,7 +73,7 @@ public:
         , _verifyBackend(tr("verifyBackend"))
         , _primaryButtonLayout(4)
         , _verificationButtonLayout(3)
-        , _layout(6, 2)
+        , _layout(7, 2)
     {
         _backend.addItem(tr("denseBackend"));
         _backend.addItem(tr("sparseBackend"));
@@ -78,6 +83,8 @@ public:
         _targetReturn.setMinValue(-1.0);
         _targetReturn.setMaxValue(1.0);
         _targetReturn.setNumberOfDigitsAfterDecimalPoint(6);
+        _targetSlider.setRange(-1.0, 1.0, 101);
+        _targetSlider.setValue(0.01, false);
 
         _frontierPoints.setValue(static_cast<td::INT4>(25));
         _frontierPoints.setMinValue(2.0);
@@ -90,6 +97,7 @@ public:
 
         _backend.setToolTip(tr("backendTooltip"));
         _targetReturn.setToolTip(tr("targetReturnTooltip"));
+        _targetSlider.setToolTip(tr("targetSliderTooltip"));
         _frontierPoints.setToolTip(tr("frontierPointsTooltip"));
         _optimizeTarget.setToolTip(tr("optimizeTargetTooltip"));
         _buildFrontier.setToolTip(tr("buildFrontierTooltip"));
@@ -99,6 +107,7 @@ public:
 
         _backend.disable();
         _targetReturn.disable();
+        _targetSlider.disable();
         _frontierPoints.disable();
         _optimizeTarget.disable();
         _buildFrontier.disable();
@@ -117,6 +126,7 @@ public:
         gui::GridComposer composer(_layout);
         composer.appendRow(_backendLabel) << _backend;
         composer.appendRow(_targetLabel) << _targetReturn;
+        composer.appendRow(_targetSliderLabel) << _targetSlider;
         composer.appendRow(_frontierPointsLabel) << _frontierPoints;
         composer.appendRow(_primaryButtonLayout, 0);
         composer.appendRow(_verificationButtonLayout, 0);
@@ -124,10 +134,16 @@ public:
 
         setLayout(&_layout);
 
+        _targetSlider.onChangedValue([this]()
+        {
+            _targetReturn.setValue(_targetSlider.getValue());
+        });
+
         _optimizeTarget.onClick([this]()
             {
                 double targetReturn = 0.0;
                 _targetReturn.getValue(targetReturn);
+                _targetSlider.setValue(targetReturn, false);
 
                 const auto backend = selectedBackend();
                 std::string error;
@@ -317,9 +333,12 @@ public:
         _targetReturn.setMinValue(minimumReturn);
         _targetReturn.setMaxValue(maximumReturn);
         _targetReturn.setValue(initialTarget);
+        _targetSlider.setRange(minimumReturn, maximumReturn, 101);
+        _targetSlider.setValue(initialTarget, false);
 
         _backend.disable(false);
         _targetReturn.disable(false);
+        _targetSlider.disable(false);
         _frontierPoints.disable(false);
         _optimizeTarget.disable(false);
         _buildFrontier.disable(false);
