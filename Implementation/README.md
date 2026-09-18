@@ -41,6 +41,9 @@ The non-negativity constraints enforce a long-only portfolio. An asset belongs t
 - efficient-frontier and portfolio-weight CSV export
 - English and Bosnian GUI resources
 - automated numerical and data-validation tests
+- interactive target-return exploration
+- selected-portfolio allocation visualization
+- bundled real-market ETF return sample
 
 ## Active-set algorithm
 
@@ -104,10 +107,26 @@ All remaining columns represent assets. Every asset must contain the same number
 
 A synthetic five-asset sample is bundled with the application.
 
+### Real-market sample
+
+The application also includes a real-market sample containing monthly returns for five exchange-traded funds: SPY, QQQ, IEF, LQD, and GLD.
+
+The dataset contains 72 monthly observations from January 2020 through December 2025. The original ticker symbols are preserved.
+
+Monthly returns were derived from daily adjusted-close data by selecting the final available trading observation in each calendar month and computing
+
+\[
+r_t = \frac{P_t}{P_{t-1}} - 1.
+\]
+
+The adjusted-close source subset is included as `res/data/real_market_adjclose_source.csv`, while the derived optimizer-ready dataset is included as `res/data/real_market_returns.csv`.
+
+The source data originates from the public [manisahni/marketdata](https://github.com/manisahni/marketdata) dataset. The real-market sample can be loaded directly from the **Return Data** tab using **Load Real Market Sample**.
+
 ## Application workflow
 
 1. Open the **Return Data** tab.
-2. Load a CSV file or select **Load Synthetic Sample**.
+2. Load a CSV file, select **Load Synthetic Sample**, or select **Load Real Market Sample**.
 3. Open the **Optimization** tab.
 4. Select the dense or sparse natID backend.
 5. Enter a feasible target return.
@@ -244,7 +263,9 @@ Implementation/
 │   ├── DevRes.xml
 │   ├── main.xml
 │   ├── data/
-│   │   └── sample_returns.csv
+│   │   ├── sample_returns.csv
+│   │   ├── real_market_returns.csv
+│   │   └── real_market_adjclose_source.csv
 │   ├── tr/
 │   │   ├── EN/main.xml
 │   │   └── BA/main.xml

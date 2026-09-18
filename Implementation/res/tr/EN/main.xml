@@ -11,9 +11,11 @@
         <Res id="selectedFile" tr="Selected file:"/>
         <Res id="loadCsv" tr="Load CSV..."/>
         <Res id="loadSample" tr="Load Synthetic Sample"/>
+		<Res id="loadRealSample" tr="Load Real Market Sample"/>
         <Res id="showCsvFormat" tr="CSV Format..."/>
         <Res id="loadCsvTooltip" tr="Load a comma-separated matrix of periodic asset returns."/>
         <Res id="loadSampleTooltip" tr="Load the bundled deterministic synthetic demonstration data."/>
+		<Res id="loadRealSampleTooltip" tr="Load bundled monthly returns for SPY, QQQ, IEF, LQD, and GLD from 2020 through 2025."/>
         <Res id="csvFormatTooltip" tr="Show the required CSV structure and validation rules."/>
         <Res id="csvFormatTitle" tr="CSV Input Format"/>
         <Res id="csvFormatIntro" tr="Rows represent observation periods, columns represent assets, and returns use decimal form."/>

@@ -15,6 +15,7 @@
 #include <gui/VerticalLayout.h>
 #include <gui/View.h>
 
+#include <filesystem>
 #include <functional>
 #include <string>
 #include <utility>
@@ -27,6 +28,7 @@ class DataView : public gui::View
     gui::LineEdit _filePath;
     gui::Button _loadCsv;
     gui::Button _loadSample;
+    gui::Button _loadRealSample;
     gui::Button _showCsvFormat;
     gui::HorizontalLayout _fileLayout;
     gui::HorizontalLayout _buttonLayout;
@@ -58,9 +60,10 @@ public:
         , _fileLabel(tr("selectedFile"))
         , _loadCsv(tr("loadCsv"))
         , _loadSample(tr("loadSample"))
+        , _loadRealSample(tr("loadRealSample"))
         , _showCsvFormat(tr("showCsvFormat"))
         , _fileLayout(2)
-        , _buttonLayout(4)
+        , _buttonLayout(5)
         , _layout(4)
     {
         _filePath.setAsReadOnly();
@@ -70,10 +73,11 @@ public:
 
         _loadCsv.setToolTip(tr("loadCsvTooltip"));
         _loadSample.setToolTip(tr("loadSampleTooltip"));
+        _loadRealSample.setToolTip(tr("loadRealSampleTooltip"));
         _showCsvFormat.setToolTip(tr("csvFormatTooltip"));
 
         _fileLayout << _fileLabel << _filePath;
-        _buttonLayout << _loadCsv << _loadSample << _showCsvFormat;
+        _buttonLayout << _loadCsv << _loadSample << _loadRealSample << _showCsvFormat;
         _buttonLayout.appendSpacer();
         _layout << _description << _fileLayout << _buttonLayout << _summary;
         setLayout(&_layout);
@@ -93,6 +97,16 @@ public:
         _loadSample.onClick([this]()
         {
             loadPath(gui::getResFileName(":sampleReturns"));
+        });
+
+        _loadRealSample.onClick([this]()
+        {
+            const td::String sampleFile = gui::getResFileName(":sampleReturns");
+            const std::filesystem::path realMarketFile =
+                std::filesystem::path(sampleFile.c_str()).parent_path() /
+                "real_market_returns.csv";
+
+            loadPath(td::String(realMarketFile.string().c_str()));
         });
 
         _showCsvFormat.onClick([this]()

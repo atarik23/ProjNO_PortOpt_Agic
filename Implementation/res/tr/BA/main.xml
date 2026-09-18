@@ -11,9 +11,11 @@
         <Res id="selectedFile" tr="Odabrani fajl:"/>
         <Res id="loadCsv" tr="Učitaj CSV..."/>
         <Res id="loadSample" tr="Učitaj sintetički primjer"/>
+		<Res id="loadRealSample" tr="Učitaj stvarni tržišni primjer"/>
         <Res id="showCsvFormat" tr="CSV format..."/>
         <Res id="loadCsvTooltip" tr="Učitajte matricu periodičnih prinosa odvojenu zarezima."/>
         <Res id="loadSampleTooltip" tr="Učitajte ugrađene determinističke sintetičke demonstracijske podatke."/>
+		<Res id="loadRealSampleTooltip" tr="Učitajte ugrađene mjesečne prinose za SPY, QQQ, IEF, LQD i GLD od 2020. do 2025."/>
         <Res id="csvFormatTooltip" tr="Prikažite zahtijevanu CSV strukturu i pravila validacije."/>
         <Res id="csvFormatTitle" tr="Format CSV ulaza"/>
         <Res id="csvFormatIntro" tr="Redovi predstavljaju periode posmatranja, kolone investicije, a prinosi koriste decimalni oblik."/>
