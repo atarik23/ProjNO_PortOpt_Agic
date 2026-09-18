@@ -186,19 +186,19 @@ A different SDK location can be supplied through the CMake variable `NATID_SDK_R
 Place the project at:
 
 ```text
-%USERPROFILE%\PortfolioOptimizer\Implementation
+%USERPROFILE%\ProjNO_PortOpt_Agic\Implementation
 ```
 
 Configure the Visual Studio solution:
 
 ```bat
-cmake -S "%USERPROFILE%\PortfolioOptimizer\Implementation" -B "%USERPROFILE%\natID.RAMDisk\build\PortfolioOptimizer" -G "Visual Studio 17 2022" -A x64
+cmake -S "%USERPROFILE%\ProjNO_PortOpt_Agic\Implementation" -B "%USERPROFILE%\natID.RAMDisk\build\ProjNO_PortOpt_Agic" -G "Visual Studio 17 2022" -A x64
 ```
 
 Build the Debug configuration:
 
 ```bat
-cmake --build "%USERPROFILE%\natID.RAMDisk\build\PortfolioOptimizer" --config Debug
+cmake --build "%USERPROFILE%\natID.RAMDisk\build\ProjNO_PortOpt_Agic" --config Debug
 ```
 
 ## Running automated tests
@@ -212,7 +212,7 @@ set "PATH=%USERPROFILE%\natID.SDK\bin;%USERPROFILE%\natID.SDK\bin\GTK;%PATH%"
 Run the tests:
 
 ```bat
-ctest --test-dir "%USERPROFILE%\natID.RAMDisk\build\PortfolioOptimizer" -C Debug --output-on-failure
+ctest --test-dir "%USERPROFILE%\natID.RAMDisk\build\ProjNO_PortOpt_Agic" -C Debug --output-on-failure
 ```
 
 The automated test suite covers:
@@ -241,21 +241,21 @@ set "PATH=%USERPROFILE%\natID.SDK\bin;%USERPROFILE%\natID.SDK\bin\GTK;%PATH%"
 Run the application:
 
 ```bat
-"%USERPROFILE%\natID.RAMDisk\Out\PortfolioOptimization\Debug\PortfolioOptimizer.exe" "-devResPath=%USERPROFILE%\PortfolioOptimizer\Implementation"
+"%USERPROFILE%\natID.RAMDisk\Out\PortfolioOptimization\Debug\PortfolioOptimizer.exe" "-devResPath=%USERPROFILE%\ProjNO_PortOpt_Agic\Implementation"
 ```
 
 Alternatively, start it without blocking the CMD window:
 
 ```bat
-start "" "%USERPROFILE%\natID.RAMDisk\Out\PortfolioOptimization\Debug\PortfolioOptimizer.exe" "-devResPath=%USERPROFILE%\PortfolioOptimizer\Implementation"
+start "" "%USERPROFILE%\natID.RAMDisk\Out\PortfolioOptimization\Debug\PortfolioOptimizer.exe" "-devResPath=%USERPROFILE%\ProjNO_PortOpt_Agic\Implementation"
 ```
 
 ## Building with CMake GUI
 
 The same project can be configured through the graphical CMake interface:
 
-1. Set **Where is the source code** to `C:/Users/<username>/PortfolioOptimizer/Implementation`.
-2. Set **Where to build the binaries** to `C:/Users/<username>/natID.RAMDisk/build/PortfolioOptimizer`.
+1. Set **Where is the source code** to `C:/Users/<username>/ProjNO_PortOpt_Agic/Implementation`.
+2. Set **Where to build the binaries** to `C:/Users/<username>/natID.RAMDisk/build/ProjNO_PortOpt_Agic`.
 3. Select **Configure**.
 4. Choose `Visual Studio 17 2022`.
 5. Select the `x64` platform.
