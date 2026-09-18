@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <DevRes>
     <Translations>
-        <Res id="appTitle" tr="Optimizacija portfolija sredina-varijansa"/>
+        <Res id="appTitle" tr="Istraživač portfolija sredina-varijansa"/>
         <Res id="dataTab" tr="Podaci o prinosima"/>
         <Res id="optimizationTab" tr="Optimizacija"/>
         <Res id="frontierTab" tr="Efikasna granica"/>
