@@ -5,7 +5,7 @@
         <Res id="dataTab" tr="Return Data"/>
         <Res id="optimizationTab" tr="Optimization"/>
         <Res id="frontierTab" tr="Efficient Frontier"/>
-        <Res id="weightsTab" tr="Portfolio Weights"/>
+        <Res id="allocationTab" tr="Selected Allocation"/>\n        <Res id="weightsTab" tr="Portfolio Weights"/>
         <Res id="dataInstructions" tr="Load periodic asset returns from CSV or use the bundled synthetic demonstration sample. Return values must be decimals; for example, 0.012 represents 1.2 percent."/>
         <Res id="selectedFile" tr="Selected file:"/>
         <Res id="loadCsv" tr="Load CSV..."/>
@@ -24,7 +24,7 @@
         <Res id="csvFiles" tr="CSV files"/>
         <Res id="noData" tr="No return data loaded."/>
         <Res id="loadError" tr="Data Loading Error"/>
-        <Res id="targetReturn" tr="Target return:"/>
+        <Res id="targetReturn" tr="Target return:"/>\n        <Res id="targetSlider" tr="Explore target:"/>
         <Res id="frontierPoints" tr="Efficient-frontier points:"/>
         <Res id="optimizeTarget" tr="Optimize Target"/>
         <Res id="buildFrontier" tr="Build Efficient Frontier"/>
@@ -32,7 +32,7 @@
         <Res id="optimizationReady" tr="Load return data, then optimize one target return or construct the complete efficient frontier."/>
         <Res id="optimizationDataReady" tr="Return data loaded. Feasible target-return range: %.6f%% to %.6f%%. Choose a target or construct the efficient frontier."/>
         <Res id="backendTooltip" tr="Select the natID linear-system backend used to solve the KKT systems."/>
-        <Res id="targetReturnTooltip" tr="Return per observation period in decimal form; enter 0.01 for 1 percent."/>
+        <Res id="targetReturnTooltip" tr="Return per observation period in decimal form; enter 0.01 for 1 percent."/>\n        <Res id="targetSliderTooltip" tr="Choose a target interactively, then select Optimize Target to solve the portfolio."/>
         <Res id="frontierPointsTooltip" tr="Number of target-return portfolios used to construct the efficient frontier."/>
         <Res id="optimizeTargetTooltip" tr="Compute the minimum-variance portfolio for the selected target return."/>
         <Res id="buildFrontierTooltip" tr="Solve a sequence of target-return problems and construct the efficient frontier."/>
@@ -48,7 +48,7 @@
         <Res id="targetReturnAxis" tr="Target return"/>
         <Res id="weightAxis" tr="Portfolio weight"/>
         <Res id="frontierPlaceholder" tr="Build the efficient frontier to display the risk-return curve."/>
-        <Res id="weightsPlaceholder" tr="Build the efficient frontier to display portfolio weights by target return."/>
+        <Res id="weightsPlaceholder" tr="Build the efficient frontier to display portfolio weights by target return."/>\n        <Res id="allocationTitle" tr="Selected portfolio allocation"/>\n        <Res id="allocationAxis" tr="Weight allocation"/>\n        <Res id="allocationPlaceholder" tr="Optimize a target return to display its portfolio allocation."/>\n        <Res id="allocationHint" tr="Bars show the long-only weight assigned to each asset."/>
 		<Res id="frontierLegend" tr="Efficient frontier"/>
 		<Res id="individualAssetsLegend" tr="Individual assets"/>
 		<Res id="selectedPortfolioLegend" tr="Selected portfolio"/>
