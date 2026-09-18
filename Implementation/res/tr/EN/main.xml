@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<DevRes>
+    <Translations>
+        <Res id="appTitle" tr="Mean-Variance Portfolio Optimizer"/>
+        <Res id="dataTab" tr="Return Data"/>
+        <Res id="optimizationTab" tr="Optimization"/>
+        <Res id="frontierTab" tr="Efficient Frontier"/>
+        <Res id="weightsTab" tr="Portfolio Weights"/>
+        <Res id="dataInstructions" tr="Load a CSV matrix of periodic asset returns. Values must be decimals; for example, 0.012 represents 1.2 percent."/>
+        <Res id="selectedFile" tr="Selected file:"/>
+        <Res id="loadCsv" tr="Load CSV..."/>
+        <Res id="loadSample" tr="Load Synthetic Sample"/>
+        <Res id="openCsv" tr="Open Return Data"/>
+        <Res id="csvFiles" tr="CSV files"/>
+        <Res id="noData" tr="No return data loaded."/>
+        <Res id="loadError" tr="Data Loading Error"/>
+        <Res id="targetReturn" tr="Target return:"/>
+        <Res id="frontierPoints" tr="Efficient-frontier points:"/>
+        <Res id="optimizeTarget" tr="Optimize Target"/>
+        <Res id="buildFrontier" tr="Build Efficient Frontier"/>
+        <Res id="verifyBackend" tr="Verify natID Matrix Backend"/>
+        <Res id="optimizationReady" tr="Load return data, then optimize one target return or construct the complete efficient frontier."/>
+        <Res id="optimizationError" tr="Portfolio Optimization Error"/>
+        <Res id="frontierError" tr="Efficient Frontier Error"/>
+        <Res id="backendSuccess" tr="Matrix backend verified successfully for a 2 x 2 linear system."/>
+        <Res id="backendError" tr="Matrix Backend Error"/>
+        <Res id="riskAxis" tr="Portfolio risk (standard deviation)"/>
+        <Res id="returnAxis" tr="Expected return"/>
+        <Res id="targetReturnAxis" tr="Target return"/>
+        <Res id="weightAxis" tr="Portfolio weight"/>
+        <Res id="frontierPlaceholder" tr="Build the efficient frontier to display the risk-return curve."/>
+        <Res id="weightsPlaceholder" tr="Build the efficient frontier to display portfolio weights by target return."/>
+		<Res id="matrixBackend" tr="Linear-system backend:"/>
+		<Res id="denseBackend" tr="Dense (dense::DblMatrix)"/>
+		<Res id="sparseBackend" tr="Sparse (sparse::DblSolver)"/>
+		<Res id="compareBackends" tr="Compare Dense and Sparse"/>
+		<Res id="comparisonError" tr="Backend Comparison Error"/>
+		<Res id="exportFrontier" tr="Export Frontier CSV..."/>
+		<Res id="saveFrontier" tr="Export Efficient Frontier"/>
+		<Res id="exportSuccess" tr="Efficient frontier exported successfully."/>
+		<Res id="exportError" tr="Frontier Export Error"/>
+    </Translations>
+</DevRes>

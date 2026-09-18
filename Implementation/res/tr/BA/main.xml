@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<DevRes>
+    <Translations>
+        <Res id="appTitle" tr="Optimizacija portfolija sredina-varijansa"/>
+        <Res id="dataTab" tr="Podaci o prinosima"/>
+        <Res id="optimizationTab" tr="Optimizacija"/>
+        <Res id="frontierTab" tr="Efikasna granica"/>
+        <Res id="weightsTab" tr="Težine portfolija"/>
+        <Res id="dataInstructions" tr="Učitajte CSV matricu periodičnih prinosa imovine. Vrijednosti moraju biti decimalne; na primjer, 0.012 predstavlja 1.2 posto."/>
+        <Res id="selectedFile" tr="Odabrani fajl:"/>
+        <Res id="loadCsv" tr="Učitaj CSV..."/>
+        <Res id="loadSample" tr="Učitaj sintetički primjer"/>
+        <Res id="openCsv" tr="Otvori podatke o prinosima"/>
+        <Res id="csvFiles" tr="CSV fajlovi"/>
+        <Res id="noData" tr="Podaci o prinosima nisu učitani."/>
+        <Res id="loadError" tr="Greška pri učitavanju podataka"/>
+        <Res id="targetReturn" tr="Ciljani prinos:"/>
+        <Res id="frontierPoints" tr="Broj tačaka efikasne granice:"/>
+        <Res id="optimizeTarget" tr="Optimiziraj ciljani prinos"/>
+        <Res id="buildFrontier" tr="Izgradi efikasnu granicu"/>
+        <Res id="verifyBackend" tr="Provjeri natID Matrix backend"/>
+        <Res id="optimizationReady" tr="Učitajte podatke, zatim optimizirajte jedan ciljani prinos ili izgradite cijelu efikasnu granicu."/>
+        <Res id="optimizationError" tr="Greška pri optimizaciji portfolija"/>
+        <Res id="frontierError" tr="Greška pri izgradnji efikasne granice"/>
+        <Res id="backendSuccess" tr="Matrix backend je uspješno provjeren na linearnom sistemu 2 x 2."/>
+        <Res id="backendError" tr="Greška Matrix backenda"/>
+        <Res id="riskAxis" tr="Rizik portfolija (standardna devijacija)"/>
+        <Res id="returnAxis" tr="Očekivani prinos"/>
+        <Res id="targetReturnAxis" tr="Ciljani prinos"/>
+        <Res id="weightAxis" tr="Težina u portfoliju"/>
+        <Res id="frontierPlaceholder" tr="Izgradite efikasnu granicu za prikaz krive rizika i prinosa."/>
+        <Res id="weightsPlaceholder" tr="Izgradite efikasnu granicu za prikaz težina prema ciljanom prinosu."/>
+		<Res id="matrixBackend" tr="Backend linearnog sistema:"/>
+		<Res id="denseBackend" tr="Gusta matrica (dense::DblMatrix)"/>
+		<Res id="sparseBackend" tr="Rijetka matrica (sparse::DblSolver)"/>
+		<Res id="compareBackends" tr="Uporedi gusti i rijetki backend"/>
+		<Res id="comparisonError" tr="Greška pri poređenju backenda"/>
+		<Res id="exportFrontier" tr="Izvezi granicu u CSV..."/>
+		<Res id="saveFrontier" tr="Izvoz efikasne granice"/>
+		<Res id="exportSuccess" tr="Efikasna granica je uspješno izvezena."/>
+		<Res id="exportError" tr="Greška pri izvozu granice"/>
+    </Translations>
+</DevRes>

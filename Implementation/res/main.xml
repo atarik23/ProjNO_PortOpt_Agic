@@ -1,0 +1,11 @@
+<?xml version='1.0'?>
+<DevRes>
+    <Images>
+        <Res id="appInfo" path="Common/Icons/Info48.png"/>
+        <Res id="export" path="Common/Icons/export48.png"/>
+    </Images>
+    <FileNames>
+        <Res id="sampleReturns" path=":data/sample_returns.csv"/>
+    </FileNames>
+</DevRes>
+

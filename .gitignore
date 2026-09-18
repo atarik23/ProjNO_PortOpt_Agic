@@ -1,0 +1,49 @@
+# Visual Studio
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.VC.db
+*.VC.opendb
+
+# CMake
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+Makefile
+
+# Build configurations
+Debug/
+Release/
+RelWithDebInfo/
+MinSizeRel/
+x64/
+Win32/
+
+# Compiled files
+*.obj
+*.o
+*.exe
+*.dll
+*.lib
+*.pdb
+*.ilk
+*.exp
+
+# Temporary files
+tmp/
+*.tmp
+*.log
+*~
+
+# Operating-system files
+Thumbs.db
+.DS_Store
+
+# Locally exported results
+/portfolio_frontier*.csv
