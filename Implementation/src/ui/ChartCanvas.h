@@ -482,8 +482,8 @@ class PortfolioAllocationCanvas : public PortfolioChartCanvas
         const double rowHeight = availableHeight /
             static_cast<double>(assetCount);
         const double barLeft = 315.0;
-        const double barRight = 875.0;
-        const double valueLeft = 888.0;
+        const double barRight = 850.0;
+        const double valueLeft = 862.0;
 
         for (std::size_t asset = 0; asset < assetCount; ++asset)
         {
