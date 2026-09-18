@@ -450,3 +450,93 @@ public:
     {
     }
 };
+
+
+class PortfolioAllocationCanvas : public PortfolioChartCanvas
+{
+    const AppState& _state;
+
+    void onDraw(const gui::Rect&) override
+    {
+        constexpr double contentTop = 88.0;
+        drawAxes(contentTop);
+
+        if (!_state.hasSolution() || !_state.solution().converged)
+        {
+            drawEmptyMessage(contentTop);
+            return;
+        }
+
+        const auto& solution = _state.solution();
+        const auto& names = _state.data().assetNames;
+        const std::size_t assetCount =
+            std::min(names.size(), solution.weights.size());
+
+        if (assetCount == 0)
+        {
+            drawEmptyMessage(contentTop);
+            return;
+        }
+
+        const double availableHeight = plotBottom - contentTop - 18.0;
+        const double rowHeight = availableHeight /
+            static_cast<double>(assetCount);
+        const double barLeft = 315.0;
+        const double barRight = 875.0;
+        const double valueLeft = 888.0;
+
+        for (std::size_t asset = 0; asset < assetCount; ++asset)
+        {
+            const double weight =
+                std::clamp(solution.weights[asset], 0.0, 1.0);
+            const double centerY =
+                contentTop + (static_cast<double>(asset) + 0.5) * rowHeight;
+            const double halfBarHeight =
+                std::clamp(0.28 * rowHeight, 5.0, 14.0);
+
+            drawTextInRect(names[asset],
+                           plotLeft + 12.0,
+                           centerY - 15.0,
+                           barLeft - 18.0,
+                           centerY + 15.0,
+                           gui::Font::ID::SystemNormal,
+                           td::ColorID::SysText);
+
+            gui::Shape::drawRect(
+                {barLeft, centerY - halfBarHeight,
+                 barRight, centerY + halfBarHeight},
+                td::ColorID::SysBackAlt2);
+
+            if (weight > 0.0)
+            {
+                gui::Shape::drawRect(
+                    {barLeft, centerY - halfBarHeight,
+                     barLeft + weight * (barRight - barLeft),
+                     centerY + halfBarHeight},
+                    td::ColorID::RoyalBlue);
+            }
+
+            drawTextInRect(percentage(weight, 2),
+                           valueLeft,
+                           centerY - 15.0,
+                           plotRight - 8.0,
+                           centerY + 15.0,
+                           gui::Font::ID::SystemNormal,
+                           td::ColorID::SysText);
+        }
+
+        drawTextInRect(tr("allocationHint").c_str(),
+                       405.0, 22.0, 960.0, 54.0,
+                       gui::Font::ID::SystemSmaller,
+                       td::ColorID::DarkGray);
+    }
+
+public:
+    explicit PortfolioAllocationCanvas(const AppState& state)
+        : PortfolioChartCanvas(tr("allocationAxis"),
+                               tr("allocationTitle"),
+                               tr("allocationPlaceholder"))
+        , _state(state)
+    {
+    }
+};
