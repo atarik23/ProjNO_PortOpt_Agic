@@ -48,3 +48,12 @@ Thumbs.db
 
 # Locally exported results
 portfolio_frontier*.csv
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk

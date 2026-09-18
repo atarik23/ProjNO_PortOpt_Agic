@@ -1,0 +1,624 @@
+% Mean-Variance Portfolio Optimization - Numerical Optimization course report
+% Compile from the Docs directory with:
+%   pdflatex -jobname=PortfolioOptimization_Report PortfolioOptimization_LatexSourceCode.tex
+%   pdflatex -jobname=PortfolioOptimization_Report PortfolioOptimization_LatexSourceCode.tex
+
+\documentclass[conference]{IEEEtran}
+
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{balance}
+
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\mat}[1]{\boldsymbol{#1}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\imageorplaceholder}[3]{%
+    \IfFileExists{#1}{%
+        \includegraphics[width=#2,height=#3,keepaspectratio]{#1}%
+    }{%
+        \fbox{%
+            \parbox[c][#3][c]{\dimexpr#2-2\fboxsep-2\fboxrule\relax}{%
+                \centering
+                \textbf{Screenshot placeholder}\\[4pt]
+                \texttt{\detokenize{#1}}\\[4pt]
+                Replace the placeholder by adding the final application screenshot
+                to the \texttt{Images} directory.
+            }%
+        }%
+    }%
+}
+
+\title{Mean-Variance Portfolio Optimization via Active-Set Quadratic Programming}
+
+\author{%
+\IEEEauthorblockN{Tarik Agi\'{c}}
+\IEEEauthorblockA{Student ID: 20108\\
+Numerical Optimization Course Project}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This paper presents a complete implementation of long-only mean-variance
+portfolio optimization as a convex quadratic program. Periodic asset returns
+are loaded from a validated comma-separated-value matrix and used to estimate
+the sample mean-return vector and unbiased sample covariance matrix. For a
+specified target return, the optimizer minimizes portfolio variance subject to
+full investment, the target-return equality, and nonnegative asset weights.
+The numerical core is a primal active-set method. It starts from an explicitly
+constructed feasible portfolio, solves an equality-constrained
+Karush--Kuhn--Tucker system at every iteration, truncates a step when a bound
+becomes active, and removes an active bound when its multiplier violates the
+optimality conditions. The implementation uses the natID framework for the
+graphical interface and for two interchangeable linear-system backends:
+\texttt{dense::DblMatrix} and \texttt{sparse::DblSolver} with LU
+factorization. Repeated solutions from the global minimum-variance return to
+the largest feasible asset return form the efficient frontier. The application
+also visualizes individual assets, the selected portfolio, changes of the
+active set, and portfolio weights across target returns. On the bundled
+five-asset, 24-period data set, the global minimum-variance portfolio achieves
+a periodic return of $0.726733\%$ at $0.134594\%$ risk. At a $1\%$ target, the
+solver converges in six iterations with two active bounds and $0.281134\%$
+risk. Dense and sparse solutions agree to approximately machine precision.
+Automated tests additionally cover analytical cases, feasibility and KKT
+conditions, invalid inputs, frontier construction, and two 20-asset systems.
+\end{abstract}
+
+\begin{IEEEkeywords}
+active-set method, efficient frontier, mean-variance optimization, quadratic
+programming, portfolio optimization, sparse linear systems
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Mean-variance portfolio selection expresses the allocation of capital as a
+trade-off between expected return and risk. Markowitz's formulation established
+that portfolio risk depends not only on the variances of individual assets but
+also on their covariances \cite{markowitz1952}. Consequently, combining assets
+whose returns do not move identically can yield a portfolio with lower
+variance than any allocation derived from individual volatilities alone.
+
+This project treats portfolio construction as a numerical optimization
+problem rather than as a financial forecasting exercise. The inputs are a
+matrix of periodic asset returns, and the outputs are optimal portfolio
+weights for one or more prescribed returns. Short selling is excluded, every
+unit of available capital must be invested, and no transaction costs, taxes,
+or risk-free asset are modeled. Under these assumptions the problem has a
+quadratic objective, two linear equalities, and bound constraints. Because a
+sample covariance matrix is positive semidefinite, the resulting program is
+convex; any point satisfying the Karush--Kuhn--Tucker (KKT) conditions is a
+global solution.
+
+The main numerical challenge is the changing set of zero-weight assets. An
+asset with $w_i=0$ has an active lower bound. As the requested return changes,
+assets enter and leave this active set, producing different allocation regimes
+along the efficient frontier. Active-set quadratic-programming methods are
+well suited to this structure because they explicitly identify the binding
+constraints and solve a sequence of equality-constrained subproblems
+\cite{nocedal2006,goldfarb1983}.
+
+The completed application contains four connected stages. First, it validates
+and loads return observations. Second, it estimates the mean vector and
+covariance matrix. Third, it solves either a global minimum-variance problem or
+a target-return problem by an active-set method. Finally, it constructs and
+visualizes the efficient frontier and the corresponding weight paths. The
+software is written in C++20 and uses natID both for its native graphical
+interface and for dense and sparse matrix solvers \cite{natid}. A common
+matrix-backend interface permits the same active-set algorithm to be executed
+with either solver, making numerical agreement directly measurable.
+
+The contribution of the project is therefore not a new financial model, but a
+transparent end-to-end realization of the model: data validation, statistical
+estimation, constrained optimization, backend comparison, visualization,
+export, and automated numerical verification are implemented in one program.
+
+\section{Problem Formulation}
+
+\subsection{Return Statistics}
+
+Let $T$ denote the number of observation periods and $n$ the number of assets.
+The input matrix $\mat{R}\in\mathbb{R}^{T\times n}$ stores the periodic return
+$R_{ti}$ of asset $i$ in period $t$. For each asset, the estimator of expected
+periodic return is
+\begin{equation}
+    \mu_i = \frac{1}{T}\sum_{t=1}^{T} R_{ti}.
+    \label{eq:mean}
+\end{equation}
+The implementation uses the unbiased sample covariance estimator
+\begin{equation}
+    \Sigma_{ij} = \frac{1}{T-1}\sum_{t=1}^{T}
+    (R_{ti}-\mu_i)(R_{tj}-\mu_j).
+    \label{eq:covariance}
+\end{equation}
+The standard deviation $\sigma_i=\sqrt{\Sigma_{ii}}$ is used when an individual
+asset is drawn on the risk-return diagram. All quantities remain on the scale
+of one observation period; the application does not silently annualize input
+data.
+
+For a portfolio weight vector $\vect{w}\in\mathbb{R}^{n}$, expected return and
+variance are
+\begin{align}
+    \mu_p(\vect{w}) &= \vect{\mu}^{T}\vect{w}, \\
+    \sigma_p^2(\vect{w}) &= \vect{w}^{T}\mat{\Sigma}\vect{w},
+    \label{eq:metrics}
+\end{align}
+and the displayed portfolio risk is
+$\sigma_p(\vect{w})=\sqrt{\sigma_p^2(\vect{w})}$.
+
+\subsection{Long-Only Target-Return Program}
+
+For a requested periodic return $r$, the application solves
+\begin{align}
+ \underset{\vect{w}}{\operatorname{minimize}}\quad
+     & \frac{1}{2}\vect{w}^{T}\mat{\Sigma}\vect{w}
+       \label{eq:qp}\\
+ \operatorname{subject\ to}\quad
+     & \vect{\mu}^{T}\vect{w}=r, \nonumber\\
+     & \vect{1}^{T}\vect{w}=1, \nonumber\\
+     & \vect{w}\geq \vect{0}. \nonumber
+\end{align}
+The factor $1/2$ does not change the minimizer, but makes the objective
+gradient equal to $\mat{\Sigma}\vect{w}$. The budget equality enforces full
+investment, while nonnegativity enforces a long-only portfolio. With only
+these constraints, the feasible target interval is
+\begin{equation}
+    r\in\left[\min_i\mu_i,\ \max_i\mu_i\right].
+    \label{eq:feasible-range}
+\end{equation}
+Targets outside this interval are rejected before a linear system is formed.
+
+The global minimum-variance (GMV) problem removes the target-return equality
+from \eqref{eq:qp}. Its solution is the left endpoint of the efficient branch
+of the risk-return curve. The application first computes this portfolio and
+then samples target values uniformly between its expected return and
+$\max_i\mu_i$. Solving \eqref{eq:qp} at those targets yields the displayed
+efficient frontier. Sampling begins at the GMV return rather than at
+$\min_i\mu_i$, because lower-return minimum-variance portfolios belong to the
+inefficient branch.
+
+\section{Active-Set Numerical Method}
+
+\subsection{Feasible Initialization}
+
+A primal active-set method must begin with a feasible point. For an interior
+target $r$, the implementation finds one asset with the largest mean below
+$r$ and one with the smallest mean above $r$. If their returns are
+$\mu_{\ell}<r<\mu_u$, a two-asset feasible portfolio is obtained from
+\begin{align}
+    w_{\ell} &= \frac{\mu_u-r}{\mu_u-\mu_{\ell}}, &
+    w_u &= 1-w_{\ell},
+    \label{eq:initial}
+\end{align}
+with all remaining weights equal to zero. Equation \eqref{eq:initial}
+satisfies both equalities and nonnegativity by construction. At a boundary of
+the feasible interval, the solver restricts the problem to all assets whose
+means match that boundary and computes their minimum-variance allocation. The
+GMV solve starts from equal weights $w_i=1/n$.
+
+\subsection{Working Set and KKT Direction}
+
+Let $\mathcal{W}_k$ be the set of zero-weight bounds treated as active at
+iteration $k$, and let $\mat{E}_{\mathcal{W}_k}$ select their components. The
+equality matrix and right-hand side are
+\begin{equation}
+ \mat{A}=\begin{bmatrix}\vect{1}^{T}\\\vect{\mu}^{T}\end{bmatrix},
+ \qquad
+ \vect{b}=\begin{bmatrix}1\\r\end{bmatrix}
+ \label{eq:ab}
+\end{equation}
+for a target-return solve. The GMV version contains only the first row.
+
+At a feasible iterate $\vect{w}_k$, the gradient is
+$\vect{g}_k=\mat{H}\vect{w}_k$, where $\mat{H}$ is a regularized covariance
+matrix described below. The search direction is obtained by solving the
+equality-constrained quadratic subproblem. Its KKT equations are
+\begin{equation}
+\begin{bmatrix}
+\mat{H} & \mat{A}^{T} & \mat{E}_{\mathcal{W}_k}^{T}\\
+\mat{A} & \mat{0} & \mat{0}\\
+\mat{E}_{\mathcal{W}_k} & \mat{0} & \mat{0}
+\end{bmatrix}
+\begin{bmatrix}
+\vect{p}_k\\\vect{\lambda}_k\\\vect{\nu}_k
+\end{bmatrix}
+=
+\begin{bmatrix}
+-\vect{g}_k\\\vect{0}\\\vect{0}
+\end{bmatrix}.
+\label{eq:kkt}
+\end{equation}
+The last block forces $p_i=0$ for active assets, while
+$\mat{A}\vect{p}_k=\vect{0}$ preserves the equalities. Direct factorization of
+\eqref{eq:kkt} is appropriate for the moderate systems considered here;
+nevertheless, the system is indefinite and can become ill-conditioned when
+asset returns or covariance columns are nearly dependent \cite{golub2013}.
+
+\subsection{Blocking Bounds and Multiplier Test}
+
+If $\vect{p}_k$ is nonzero, the full step is accepted unless it would make a
+free weight negative. The step length is
+\begin{equation}
+ \alpha_k=\min\left(1,
+   \min_{\substack{i\notin\mathcal{W}_k\\p_{k,i}<0}}
+   \frac{-w_{k,i}}{p_{k,i}}\right).
+ \label{eq:step}
+\end{equation}
+The update $\vect{w}_{k+1}=\vect{w}_k+\alpha_k\vect{p}_k$ remains feasible.
+When $\alpha_k<1$, the blocking weight is set exactly to zero and its bound is
+added to the working set.
+
+When $\norm{\vect{p}_k}_{\infty}$ is below the direction tolerance, the current
+point minimizes the objective over the present working set. The multipliers of
+the active bounds are then inspected. An active bound whose multiplier has the
+wrong sign is removed, permitting that weight to increase in a later
+iteration. If no multiplier violates the sign condition, the KKT conditions
+for the full long-only problem are satisfied and the iteration terminates.
+This add-or-remove logic is what allows the algorithm to follow different
+active-set regions of the efficient frontier.
+
+\subsection{Regularization and Stopping Checks}
+
+The matrix used inside \eqref{eq:kkt} is symmetrized and slightly regularized:
+\begin{align}
+ \mat{H} &= \tfrac{1}{2}(\mat{\Sigma}+\mat{\Sigma}^{T})+\delta\mat{I},\\
+ \delta &= \max\left(10^{-12},\rho\max(10^{-12},s)\right),\\
+ s &= \frac{1}{n}\sum_{i=1}^{n}|\Sigma_{ii}|,
+ \label{eq:regularization}
+\end{align}
+where the default relative regularization is $\rho=10^{-9}$. Regularization is
+used only to stabilize the numerical systems. Reported variance and risk are
+recomputed with the original sample covariance matrix.
+
+The default maximum is 500 active-set iterations. The primal, direction, and
+multiplier tolerances are respectively $10^{-9}$, $10^{-10}$, and $10^{-9}$.
+After termination, the implementation independently checks equality residuals
+and nonnegativity. A solve is reported as converged only when these checks
+pass. This prevents a successful factorization from being confused with a
+valid optimization result.
+
+\section{Software Architecture and natID Integration}
+
+The implementation separates data processing, numerical optimization, and
+presentation. \texttt{CsvReader} parses the return matrix and reports the line
+and column of invalid entries. It supports quoted CSV fields and an optional
+observation-label column named \texttt{Date}, \texttt{Period}, \texttt{Time},
+\texttt{Timestamp}, or \texttt{Observation}. Asset names must be nonempty and
+unique, all numeric values must be finite, and the matrix must contain at least
+two assets and two observations. \texttt{StatisticsCalculator} implements
+\eqref{eq:mean} and \eqref{eq:covariance}. The structures
+\texttt{ReturnData}, \texttt{Statistics}, \texttt{PortfolioSolution}, and
+\texttt{EfficientFrontier} carry the resulting data between modules.
+
+\texttt{ActiveSetQPSolver} implements the method of Section III and does not
+depend on GUI controls. Linear algebra is delegated to
+\texttt{MatrixBackend}, which exposes one interface for two professor-provided
+natID implementations:
+\begin{itemize}
+    \item \texttt{dense::DblMatrix} stores the complete KKT matrix and solves
+    it through the dense matrix API;
+    \item \texttt{sparse::DblSolver} receives only nonzero triplets and uses
+    general LU factorization with multi-pass Markowitz pivoting and the
+    solver's own ordering strategy.
+\end{itemize}
+Although the mathematical KKT matrix is symmetric, the sparse path deliberately
+uses the general LU mode. This avoids assuming positive definiteness, which an
+indefinite saddle-point matrix does not possess. Sparse direct methods can
+exploit structural zeros in larger systems, but their setup and ordering costs
+mean that sparsity does not automatically imply lower runtime for a small
+portfolio \cite{davis2006}.
+
+\texttt{AppState} owns the loaded data and current results. It resets stale
+solutions whenever a new data set is loaded, invokes the selected backend,
+constructs summaries, compares both backends, and exports the frontier. The
+export contains target and achieved returns, risk, variance, iteration count,
+active-constraint names, and every asset weight at full double precision.
+
+The natID interface contains separate views for return data, optimization,
+the efficient frontier, and weight paths. The optimization view disables
+data-dependent controls until a valid matrix has been loaded and adjusts the
+numeric target limits to the feasible interval in \eqref{eq:feasible-range}.
+The risk-return chart draws individual assets, the efficient frontier, and a
+distinct marker for the most recently optimized portfolio. The weight chart
+plots $w_i(r)$ for every asset and marks sampled positions where the active set
+changes. English and Bosnian resources use identical translation keys. A CSV
+format panel documents the expected input directly inside the application.
+
+\section{Experimental Setup and Verification}
+
+\subsection{Bundled Demonstration Data}
+
+The bundled deterministic data set contains 24 monthly observations for five
+synthetic asset classes. Synthetic observations are appropriate for a
+reproducible demonstration: every evaluator obtains identical statistics,
+frontier points, and active-set transitions. They are not presented as a
+forecast or as evidence of investable performance. Table~\ref{tab:stats}
+lists the statistics produced by the application; percentages are per
+observation period.
+
+\begin{table}[!t]
+\caption{Bundled Data Set: Sample Statistics}
+\label{tab:stats}
+\centering
+\footnotesize
+\begin{tabular}{lrr}
+\toprule
+Asset & Mean (\%) & Std. dev. (\%)\\
+\midrule
+Global Equity    & 0.837500 & 1.524243\\
+Technology       & 1.266667 & 2.446411\\
+Government Bonds & 0.516667 & 0.703202\\
+Corporate Bonds  & 0.720833 & 0.358717\\
+Gold             & 0.995833 & 1.258529\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The sample intentionally contains materially different risk-return profiles
+and strong positive and negative correlations. This produces a visible
+diversification effect and causes several bound constraints to change status
+across the frontier. The example is therefore more informative for the active-
+set method than a diagonal covariance matrix, while remaining small enough for
+manual interpretation.
+
+\subsection{Automated Numerical Tests}
+
+The executable \texttt{PortfolioCoreTests} is registered with CTest. Its
+checks are summarized in Table~\ref{tab:tests}. The tests exercise both
+successful and rejected inputs; they do not merely verify that the application
+runs without an exception.
+
+\begin{table}[!t]
+\caption{Automated Verification Scenarios}
+\label{tab:tests}
+\centering
+\scriptsize
+\begin{tabular}{p{0.28\columnwidth}p{0.61\columnwidth}}
+\toprule
+Scenario & Verified property\\
+\midrule
+CSV and statistics & Dimensions, known sample means, covariance symmetry,
+and malformed-number rejection.\\
+Two-asset target & Analytical $w_1=w_2=0.5$ solution at the prescribed
+return.\\
+Diagonal GMV & Analytical weights $(36,9,4)/49$.\\
+Active bound & Primal feasibility, a zero-weight asset, and reduced-gradient
+KKT conditions.\\
+Infeasible target & Rejection above the long-only feasible interval.\\
+20-asset diagonal & Dense and sparse feasibility and agreement of all
+weights.\\
+20-asset correlated & Positive-definite $\mat{B}\mat{B}^{T}+\mat{D}$
+covariance, dense/sparse agreement, and an interior optimum.\\
+Efficient frontier & 25 feasible, monotonically ordered solutions on the
+bundled data set.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The KKT test reconstructs the objective gradient with the original covariance
+matrix. Multipliers for the budget and return equalities are inferred from two
+free assets. Reduced gradients must be near zero for positive weights and must
+have the correct sign at active lower bounds. The larger correlated problem
+uses $\mat{\Sigma}=\mat{B}\mat{B}^{T}+\mat{D}$ with strictly positive diagonal
+$\mat{D}$, which guarantees positive definiteness while retaining nonzero
+cross-asset correlations.
+
+A separate backend check solves
+\begin{equation}
+ \begin{bmatrix}2&1\\1&3\end{bmatrix}
+ \begin{bmatrix}x\\y\end{bmatrix}=
+ \begin{bmatrix}5\\7\end{bmatrix}
+ \label{eq:backend-check}
+\end{equation}
+with both natID implementations and verifies the known result
+$(x,y)=(1.6,1.8)$.
+
+\section{Results and Discussion}
+
+\subsection{Efficient Frontier and Allocations}
+
+With 25 sampled frontier points, the GMV portfolio has expected periodic
+return $0.726733\%$, risk $0.134594\%$, and variance
+$1.811551\times10^{-6}$. The highest feasible sampled target is
+$1.266667\%$, equal to the mean of Technology. Table~\ref{tab:weights}
+compares the GMV allocation with the independently optimized $1\%$ target.
+
+\begin{table}[!t]
+\caption{Optimal Portfolio Weights}
+\label{tab:weights}
+\centering
+\footnotesize
+\begin{tabular}{lrr}
+\toprule
+Asset & GMV (\%) & Target $1\%$ (\%)\\
+\midrule
+Global Equity    & 11.483536 & 0.000000\\
+Technology       & 0.000000  & 24.316306\\
+Government Bonds & 23.552014 & 0.000000\\
+Corporate Bonds  & 50.205170 & 22.432726\\
+Gold             & 14.759280 & 53.250968\\
+\midrule
+Total            & 100.000000 & 100.000000\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The GMV solution assigns its largest weight to Corporate Bonds, the asset with
+the smallest individual standard deviation, but it still allocates capital to
+three other assets because covariance determines portfolio risk. Technology is
+excluded at the GMV point. Raising the target to $1\%$ changes the balance:
+Technology supplies the higher expected return, Gold becomes the largest
+holding, and the lower-return Global Equity and Government Bonds reach their
+active lower bounds. The $1\%$ portfolio attains the target to numerical
+precision, has risk $0.281134\%$, variance approximately
+$7.90\times10^{-6}$, and converges in six active-set iterations.
+
+Across the 25 sampled points, five active-set transitions create six observed
+allocation regions. The sequence begins with Technology fixed at zero near the
+GMV portfolio, passes through an interior region, and then successively fixes
+Global Equity, Government Bonds, and Corporate Bonds as the target increases.
+At the maximum target, Technology has weight one and all other assets are
+active. These changes explain the visible piecewise behavior of the weight
+paths and changes in curvature of the sampled frontier.
+
+\begin{figure*}[!t]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\imageorplaceholder{Images/efficient_frontier.png}{\linewidth}{2.05in}\\[-1pt]
+\small (a)
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\imageorplaceholder{Images/portfolio_weights.png}{\linewidth}{2.05in}\\[-1pt]
+\small (b)
+\end{minipage}
+\caption{Portfolio visualizations for the bundled five-asset data set:
+(a) the efficient frontier, individual assets, and selected $1\%$ portfolio;
+(b) portfolio weights across target returns, with dashed markers at sampled
+active-set changes.}
+\label{fig:visualizations}
+\end{figure*}
+
+Figure~\ref{fig:visualizations}(a) is intended to be read with risk on the
+horizontal axis and expected return on the vertical axis. A point above and to
+the left is preferable in the mean-variance sense, although the model does not
+select a single universally best point because investors may accept different
+risk levels. Figure~\ref{fig:visualizations}(b) exposes information that the
+frontier alone cannot show: which assets generate each efficient portfolio and
+exactly where zero-weight constraints change.
+
+\subsection{Dense and Sparse Backend Agreement}
+
+Table~\ref{tab:backend} reports one comparison captured in the Debug
+configuration for the $1\%$ target. Both backends execute the same active-set
+logic and differ only in the solution of \eqref{eq:kkt}.
+
+\begin{table}[!t]
+\caption{Dense--Sparse Comparison at a $1\%$ Target}
+\label{tab:backend}
+\centering
+\footnotesize
+\begin{tabular}{lrr}
+\toprule
+Quantity & Dense & Sparse\\
+\midrule
+Iterations & 6 & 6\\
+Active constraints & 2 & 2\\
+Single-run time (ms) & 0.6823 & 0.3571\\
+Budget residual & $0$ & $0$\\
+Return residual & $1.735\!\times\!10^{-18}$ &
+$1.735\!\times\!10^{-18}$\\
+\bottomrule
+\multicolumn{3}{l}{\scriptsize Max. weight difference:
+$5.551\times10^{-17}$}\\
+\multicolumn{3}{l}{\scriptsize Variance difference:
+$5.082\times10^{-21}$}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The active sets are identical, and the maximum weight difference is close to
+double-precision roundoff. This is stronger evidence than matching objective
+values alone because two implementations independently reproduce the entire
+allocation. The comparison tolerance used by the interface is $10^{-7}$.
+The measured times are displayed for diagnostic interest only. They are single
+runs from a Debug build, include solver setup, and do not control processor
+state or repeat count; they therefore do not establish a general performance
+advantage for either storage scheme.
+
+\begin{figure}[!t]
+\centering
+\imageorplaceholder{Images/backend_comparison.png}{\columnwidth}{1.65in}
+\caption{Optimization view showing the numerical comparison of the two natID
+matrix backends.}
+\label{fig:comparison}
+\end{figure}
+
+The sparse representation becomes conceptually more relevant as the number of
+assets and active bounds grows, because the lower KKT blocks contain many
+structural zeros. However, the covariance block estimated from ordinary asset
+returns is generally dense. Consequently, a portfolio KKT matrix is not fully
+sparse, and a performance claim requires controlled experiments over multiple
+problem sizes. The project deliberately limits its conclusion to numerical
+agreement and correct use of both professor-provided matrix implementations.
+
+\section{Limitations}
+
+The numerical results must be interpreted within the model assumptions.
+Historical or synthetic sample means are uncertain estimates of future return,
+and sample covariance can be poorly conditioned when the observation count is
+small relative to the number of assets. A long-only restriction avoids
+leveraged and short positions but does not model upper bounds, sector limits,
+turnover, transaction costs, taxes, or a risk-free asset. Variance penalizes
+positive and negative deviations symmetrically and does not directly represent
+tail loss. The model is single-period and static; it does not rebalance through
+time.
+
+The bundled data are synthetic and were chosen for deterministic verification
+and clear visualization. They demonstrate the numerical method, not a trading
+strategy. A practical deployment would require a documented historical data
+source, frequency and currency normalization, treatment of missing values,
+out-of-sample evaluation, and sensitivity analysis. From a numerical
+perspective, larger or nearly dependent data sets may also require stronger
+covariance estimation, scaling, or specialized symmetric-indefinite
+factorization. These extensions are intentionally outside the scope of the
+implemented course project.
+
+\section{Conclusion}
+
+The project implements the proposed mean-variance model as a complete and
+verifiable numerical application. It estimates return statistics from a CSV
+matrix, formulates the long-only target-return problem as a convex quadratic
+program, and solves it through a feasible primal active-set method. Explicit
+working-set updates make zero-weight constraints observable rather than hiding
+them behind a library optimizer. Repeated solutions construct the efficient
+frontier and show how allocations change as additional return is required.
+
+The implementation also demonstrates a separation between optimization logic
+and linear algebra. Dense and sparse natID backends solve the same KKT systems
+and agree to near machine precision on the bundled example, while automated
+tests extend verification to analytical and 20-asset cases. The resulting
+frontier, weight paths, residuals, active constraints, and CSV export provide
+multiple independent views of correctness. Within its stated long-only,
+single-period assumptions, the application fulfills the intended numerical
+optimization objectives and provides a clear basis for explaining both the
+mathematics and the implementation.
+
+\balance
+\begin{thebibliography}{00}
+
+\bibitem{markowitz1952}
+H. Markowitz, ``Portfolio selection,'' \emph{The Journal of Finance},
+vol. 7, no. 1, pp. 77--91, Mar. 1952, doi: 10.2307/2975974.
+
+\bibitem{nocedal2006}
+J. Nocedal and S. J. Wright, \emph{Numerical Optimization}, 2nd ed.
+New York, NY, USA: Springer, 2006.
+
+\bibitem{goldfarb1983}
+D. Goldfarb and A. Idnani, ``A numerically stable dual method for solving
+strictly convex quadratic programs,'' \emph{Mathematical Programming},
+vol. 27, pp. 1--33, 1983, doi: 10.1007/BF02591962.
+
+\bibitem{golub2013}
+G. H. Golub and C. F. Van Loan, \emph{Matrix Computations}, 4th ed.
+Baltimore, MD, USA: Johns Hopkins University Press, 2013.
+
+\bibitem{davis2006}
+T. A. Davis, \emph{Direct Methods for Sparse Linear Systems}.
+Philadelphia, PA, USA: Society for Industrial and Applied Mathematics, 2006.
+
+\bibitem{natid}
+I. D\v{z}afi\'{c}, ``natID: Native Interface Design for macOS, Linux, and
+Windows,'' GitHub repository. [Online]. Available:
+\url{https://github.com/idzafic/natID}. Accessed: Sep. 18, 2026.
+
+\end{thebibliography}
+
+\end{document}
