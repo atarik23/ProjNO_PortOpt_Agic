@@ -39,6 +39,22 @@ protected:
         drawable.draw({x, y}, font, color);
     }
 
+    static void drawTextInRect(const std::string& text,
+                               double left, double top,
+                               double right, double bottom,
+                               gui::Font::ID font = gui::Font::ID::SystemNormal,
+                               td::ColorID color = td::ColorID::SysText)
+    {
+        gui::DrawableString::draw(
+            td::String(text.c_str()),
+            {left, top, right, bottom},
+            font,
+            color,
+            td::TextAlignment::Left,
+            td::VAlignment::Center,
+            td::TextEllipsize::End);
+    }
+
     static std::string percentage(double value, int decimals = 2)
     {
         std::ostringstream output;
@@ -49,20 +65,26 @@ protected:
     static void drawLineLegend(double x, double y, td::ColorID color,
                                const std::string& label,
                                td::LinePattern pattern = td::LinePattern::Solid,
-                               float width = 3.0F)
+                               float width = 3.0F,
+                               double entryWidth = 180.0)
     {
         gui::Shape::drawLine({x, y + 7.0}, {x + 24.0, y + 7.0},
                              color, width, pattern);
-        drawText(label, x + 31.0, y, gui::Font::ID::SystemSmaller,
-                 td::ColorID::SysText);
+        drawTextInRect(label, x + 31.0, y - 3.0,
+                       x + entryWidth, y + 18.0,
+                       gui::Font::ID::SystemSmaller,
+                       td::ColorID::SysText);
     }
 
     static void drawSquareLegend(double x, double y, td::ColorID color,
-                                 const std::string& label)
+                                 const std::string& label,
+                                 double entryWidth = 180.0)
     {
         gui::Shape::drawRect({x + 7.0, y + 3.0, x + 17.0, y + 13.0}, color);
-        drawText(label, x + 31.0, y, gui::Font::ID::SystemSmaller,
-                 td::ColorID::SysText);
+        drawTextInRect(label, x + 31.0, y - 3.0,
+                       x + entryWidth, y + 18.0,
+                       gui::Font::ID::SystemSmaller,
+                       td::ColorID::SysText);
     }
 
     static void drawCrossMarker(double x, double y, td::ColorID color,
@@ -76,11 +98,14 @@ protected:
     }
 
     static void drawCrossLegend(double x, double y, td::ColorID color,
-                                const std::string& label)
+                                const std::string& label,
+                                double entryWidth = 180.0)
     {
         drawCrossMarker(x + 12.0, y + 7.0, color, 6.0, 2.0F);
-        drawText(label, x + 31.0, y, gui::Font::ID::SystemSmaller,
-                 td::ColorID::SysText);
+        drawTextInRect(label, x + 31.0, y - 3.0,
+                       x + entryWidth, y + 18.0,
+                       gui::Font::ID::SystemSmaller,
+                       td::ColorID::SysText);
     }
 
     void drawAxes(double plotTop = defaultPlotTop) const
@@ -243,8 +268,26 @@ class EfficientFrontierCanvas : public PortfolioChartCanvas
             const double y = mapY(_state.statistics().meanReturns[asset]);
             gui::Shape::drawRect({x - 4.0, y - 4.0, x + 4.0, y + 4.0},
                                  td::ColorID::DarkOrange);
-            drawText(_state.data().assetNames[asset], x + 6.0, y - 8.0,
-                     gui::Font::ID::SystemSmaller, td::ColorID::SysText);
+
+            const std::string& assetName = _state.data().assetNames[asset];
+            gui::Size labelSize;
+            gui::DrawableString::measure(assetName.c_str(),
+                                         gui::Font::ID::SystemSmaller,
+                                         labelSize);
+            double labelX = x + 7.0;
+            if (labelX + labelSize.width > plotRight - 4.0)
+                labelX = x - labelSize.width - 7.0;
+
+            labelX = std::clamp(labelX,
+                                plotLeft + 4.0,
+                                std::max(plotLeft + 4.0,
+                                         plotRight - labelSize.width - 4.0));
+            const double labelY = std::clamp(y - 8.0,
+                                             plotTop + 3.0,
+                                             plotBottom - labelSize.height - 3.0);
+            drawText(assetName, labelX, labelY,
+                     gui::Font::ID::SystemSmaller,
+                     td::ColorID::SysText);
         }
 
         if (showSelectedPortfolio)
@@ -366,11 +409,14 @@ class PortfolioWeightsCanvas : public PortfolioChartCanvas
 
         if (activeSetChangeCount > 0)
         {
-            drawLineLegend(760.0, 17.0, td::ColorID::DarkGray,
+            drawLineLegend(750.0, 17.0, td::ColorID::DarkGray,
                            tr("activeSetChangeLegend").c_str(),
-                           td::LinePattern::Dash, 1.0F);
+                           td::LinePattern::Dash, 1.0F, 215.0);
         }
 
+        constexpr std::size_t legendColumns = 5;
+        const double legendColumnWidth =
+            (plotRight - plotLeft) / static_cast<double>(legendColumns);
         for (std::size_t asset = 0; asset < assetCount; ++asset)
         {
             const td::ColorID color = seriesColor(asset);
@@ -384,12 +430,14 @@ class PortfolioWeightsCanvas : public PortfolioChartCanvas
                     color, 2.5F);
             }
 
-            const double legendX = 90.0 + 175.0 * static_cast<double>(asset % 5);
-            const double legendY = 47.0 + 18.0 * static_cast<double>(asset / 5);
-            gui::Shape::drawLine({legendX, legendY + 6.0},
-                                 {legendX + 18.0, legendY + 6.0}, color, 3.0F);
-            drawText(_state.data().assetNames[asset], legendX + 24.0, legendY,
-                     gui::Font::ID::SystemSmaller, td::ColorID::SysText);
+            const double legendX = plotLeft + legendColumnWidth *
+                static_cast<double>(asset % legendColumns);
+            const double legendY = 47.0 + 18.0 *
+                static_cast<double>(asset / legendColumns);
+            drawLineLegend(legendX, legendY, color,
+                           _state.data().assetNames[asset],
+                           td::LinePattern::Solid, 3.0F,
+                           legendColumnWidth - 7.0);
         }
     }
 
