@@ -477,7 +477,26 @@ public:
         output << "Target return: " << 100.0 * _solution.targetReturn << "%\n";
         output << "Expected return: " << 100.0 * _solution.expectedReturn << "%\n";
         output << "Risk (standard deviation): " << 100.0 * _solution.risk << "%\n";
-        output << "Variance: " << _solution.variance << "\n\n";
+        output << "Variance: " << _solution.variance << "\n";
+
+        const double weightSum = std::accumulate(
+            _solution.weights.begin(),
+            _solution.weights.end(),
+            0.0);
+        const double achievedReturn = std::inner_product(
+            _solution.weights.begin(),
+            _solution.weights.end(),
+            _statistics.meanReturns.begin(),
+            0.0);
+
+        output << std::scientific << std::setprecision(3);
+        output << "Budget residual: "
+            << std::abs(weightSum - 1.0) << "\n";
+        output << "Target-return residual: "
+            << std::abs(achievedReturn - _solution.targetReturn) << "\n";
+        output << std::fixed << std::setprecision(6);
+        output << "Active constraints: "
+            << _solution.activeSet.size() << "\n\n";
         output << "Optimal weights:\n";
         for (std::size_t asset = 0; asset < _solution.weights.size(); ++asset)
         {
